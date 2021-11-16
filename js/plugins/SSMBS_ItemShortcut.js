@@ -608,7 +608,7 @@ Scene_Map.prototype.refreshShortcutItem = function(){
 			}
 			let iconSet = this.shorcutItem[i].item.iconIndex;
 			this.shorcutItem[i].item.shortCutNumber = i ;
-			this.shorcutItem[i].bitmap = ImageManager.loadSystem( 'iconSet' );
+			this.shorcutItem[i].bitmap = ImageManager.loadSystem( 'IconSet' );
 			this.shorcutItem[i].setFrame(iconSet % 16*32,Math.floor(iconSet / 16)*32,32,32);
 			this.shorcutItem[i].x = this.shortcutBackArray[i].x + 2;
 			this.shorcutItem[i].y = this.shortcutBackArray[i].y + 2;

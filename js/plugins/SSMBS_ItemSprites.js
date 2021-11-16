@@ -765,7 +765,7 @@ Scene_Map.prototype.createItems = function() {
 	// 		this.itemImg.item.position = (Number(this.itemImg.positionY))*7+(Number(this.itemImg.positionX));	
 			
 			
-	// 		this.itemImg.bitmap = ImageManager.loadSystem( 'iconSet' );
+	// 		this.itemImg.bitmap = ImageManager.loadSystem( 'IconSet' );
 	// 		this.itemImg.x = (this.itemImg.positionX) * (32+8) + this.itemBackground.x + 13 ;
 	// 		this.itemImg.y = (this.itemImg.positionY) * (32+8) + this.itemBackground.y + 238;
 			
@@ -1531,7 +1531,7 @@ Scene_Map.prototype.showInformation = function() {
 			
 		}else{
 			this.informationIcon = new Sprite() ;
-			this.informationIcon.bitmap = ImageManager.loadSystem( 'iconSet' );
+			this.informationIcon.bitmap = ImageManager.loadSystem( 'IconSet' );
 			this.informationIcon.bitmap.smooth = false;
 			this.informationIcon.opacity = 0;
 			this.informationIcon.scale.x = 1.25;
