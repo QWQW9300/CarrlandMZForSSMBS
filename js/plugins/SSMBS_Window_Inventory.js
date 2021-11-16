@@ -499,7 +499,7 @@ Scene_Map.prototype.updateInventory = function(){
 				// this.gridsHasItem[j+SSMBS_Window_Inventory.listFirstLine*SSMBS_Window_Inventory.gridsPerLine].positionInInventory = j+SSMBS_Window_Inventory.listFirstLine*SSMBS_Window_Inventory.gridsPerLine;
 				SSMBS_Window_Inventory.saveItemPositon(this.gridsHasItem[j+SSMBS_Window_Inventory.listFirstLine*SSMBS_Window_Inventory.gridsPerLine],j+SSMBS_Window_Inventory.listFirstLine*SSMBS_Window_Inventory.gridsPerLine);
 				//装备拖动则卸下装备
-				if( this.itemType = 'equiped'){
+				if( this.itemType = 'equiped' && this.nowPickedItem.etypeId){
 					let type = this.nowPickedItem.wtypeId?'weapon':'armor';
 					if (type == 'weapon'){
 						$gameParty.members()[0].changeEquip( 0 , $dataWeapons[1] ) ;

@@ -2975,7 +2975,6 @@ Scene_Map.prototype.refreshBossGauge = function(target, enemy){
 	if(target && enemy._battler){
 		target.bitmap.clear();
 		var line = 0 ;
-		var lineHeight = 14;
 		let rate = enemy._battler._hp / enemy._battler.mhp;
 		target.splash = enemy._battler.damageHp;
 		target.states = [];
@@ -2988,8 +2987,6 @@ Scene_Map.prototype.refreshBossGauge = function(target, enemy){
 		var stunRate =  enemy._stun / enemy._stunMax;
 		var skillCast = $dataSkills[enemy._battler.attackSkillId()].meta.cast?
 						Number($dataSkills[enemy._battler.attackSkillId()].meta.cast):1;
-		var iconSet = $dataEnemies[enemy._battler._enemyId].meta.bossFace?
-						Number($dataEnemies[enemy._battler._enemyId].meta.bossFace):0;
 		var waitTimeRate = enemy._waitTime / ( skillCast);
 
 		target.x = Graphics.width/2 + shake;

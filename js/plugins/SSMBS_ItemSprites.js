@@ -1043,7 +1043,6 @@ Scene_Map.prototype.bindIcons = function() {
 			
 	}
 	if( this.isHandledItem && this.itemType != 'shop' &&
-		(this.itemType == 'skill'? sxlSkillWindow.member.hasSkill(this.isHandledItem.item.id):true) &&
 		TouchInput.isPressed() ){
 		this.isHandledItem.anchor.x = 0.5;
 		this.isHandledItem.anchor.y = 0.5;
