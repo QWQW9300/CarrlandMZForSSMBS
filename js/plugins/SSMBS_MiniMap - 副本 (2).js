@@ -76,7 +76,7 @@ Scene_Map.prototype.onMapLoaded = function() {
 	this.addChild(this.minimap);
 
 	this.minimap.playerIcon=new Sprite();
-	this.minimap.playerIcon.bitmap = ImageManager.loadSystem('iconSet');
+	this.minimap.playerIcon.bitmap = ImageManager.loadSystem('IconSet');
 	this.minimap.playerIcon.x = this.minimap.x-sxlSimpleMinimap.windowPadding;
 	this.minimap.playerIcon.y = this.minimap.y-sxlSimpleMinimap.windowPadding;
 	this.minimap.playerIcon.anchor.x = 0;
@@ -99,7 +99,7 @@ Scene_Map.prototype.onMapLoaded = function() {
 					if(text[0]=='minimapIcon'){
 						event.minimapIconID = Number(text[1]);
 						this.minimapIconEvent = new Sprite();
-						this.minimapIconEvent.bitmap = ImageManager.loadSystem('iconSet');
+						this.minimapIconEvent.bitmap = ImageManager.loadSystem('IconSet');
 						this.minimapIconEvent.setFrame(event.minimapIconID % 16*32,Math.floor( event.minimapIconID / 16)*32,32,32)
 						this.minimapIconEvent.event = event;
 						this.minimapIconEvent.anchor.x = 0.5;

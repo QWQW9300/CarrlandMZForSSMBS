@@ -2307,16 +2307,16 @@ Scene_Map.prototype.showInformation = function() {
 		this.information.bitmap.textColor = ColorManager.textColor(0)
 		if(!this.itemInform.stypeId){
 			if(this.itemType != 'shop'){
-				this.information.bitmap.blt(ImageManager.loadSystem('iconSet'),600 % 16*32,Math.floor(600 / 16)*32,32,32,TextStartX,TextStartY + line*informationLineHeight,22,22);
+				this.information.bitmap.blt(ImageManager.loadSystem('IconSet'),600 % 16*32,Math.floor(600 / 16)*32,32,32,TextStartX,TextStartY + line*informationLineHeight,22,22);
 				this.information.bitmap.drawText('      ' +  this.itemInform.price/2,TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');
 			}else{
-				this.information.bitmap.blt(ImageManager.loadSystem('iconSet'),600 % 16*32,Math.floor(600 / 16)*32,32,32,TextStartX,TextStartY + line*informationLineHeight,22,22);
+				this.information.bitmap.blt(ImageManager.loadSystem('IconSet'),600 % 16*32,Math.floor(600 / 16)*32,32,32,TextStartX,TextStartY + line*informationLineHeight,22,22);
 				this.information.bitmap.drawText('      ' +  this.itemInform.price ,TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');
 			}
 			line ++ ;
 			if(this.itemInform.meta.currency && this.itemType == 'shop'){
 				let currencyItem = $dataItems[Number(this.itemInform.meta.currency.split(',')[0])];
-				this.information.bitmap.blt(ImageManager.loadSystem('iconSet'), currencyItem.iconIndex % 16*32,Math.floor(currencyItem.iconIndex / 16)*32,32,32,TextStartX,TextStartY + line*informationLineHeight,22,22);
+				this.information.bitmap.blt(ImageManager.loadSystem('IconSet'), currencyItem.iconIndex % 16*32,Math.floor(currencyItem.iconIndex / 16)*32,32,32,TextStartX,TextStartY + line*informationLineHeight,22,22);
 				this.information.bitmap.drawText('      ' +  Number(this.itemInform.meta.currency.split(',')[1]) ,TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');
 				line ++ ;
 			}

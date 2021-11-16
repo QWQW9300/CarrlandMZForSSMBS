@@ -89,7 +89,7 @@ Scene_Map.prototype.createUpgradeWindow = function(){
 		this.addChild(this.upgradeWindow);
 
 		this.upgradeWindow.itemIcon = new Sprite();
-		this.upgradeWindow.itemIcon.bitmap = ImageManager.loadSystem('iconSet');
+		this.upgradeWindow.itemIcon.bitmap = ImageManager.loadSystem('IconSet');
 		this.upgradeWindow.itemIcon.setFrame(0 % 16*32,Math.floor(0 / 16)*32,32,32);
 		this.upgradeWindow.itemIcon.x = this.upgradeWindow.x + 132 ;
 		this.upgradeWindow.itemIcon.y = this.upgradeWindow.y + 143 ;

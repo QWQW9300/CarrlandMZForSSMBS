@@ -271,7 +271,7 @@ ssmbsLoot.loot = function(eventId,type,id,amount){
 	var itemSprite = new Sprite();
 
 	var icon = theItem.iconIndex;
-	itemSprite.bitmap = ImageManager.loadSystem('iconSet');
+	itemSprite.bitmap = ImageManager.loadSystem('IconSet');
 	if(theItem == 'gold'){
 		itemSprite.item = 'gold';
 		itemSprite.quantity = id;

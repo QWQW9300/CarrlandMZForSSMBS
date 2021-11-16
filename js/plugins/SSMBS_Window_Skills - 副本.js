@@ -156,7 +156,7 @@ Scene_Map.prototype.createSkillWindow = function() {
 				this.addChild(this.skillWindow.words);
 
 				this.skillWindow.skillStay = new Sprite()
-				this.skillWindow.skillStay.bitmap = ImageManager.loadSystem('iconSet');
+				this.skillWindow.skillStay.bitmap = ImageManager.loadSystem('IconSet');
 				this.skillWindow.skillStay.setFrame(iconSet % 16*32,Math.floor(iconSet / 16)*32,32,32);
 				this.skillWindow.skillStay.x = this.skillWindow.x + ((i % 5)* 58) + 16;
 				this.skillWindow.skillStay.y = this.skillWindow.y + 76 + Math.floor( i / 5 )* 64;
@@ -170,7 +170,7 @@ Scene_Map.prototype.createSkillWindow = function() {
 				this.addChild(this.skillWindow.skillStay);
 
 				this.skillWindow.skillIcon = new Sprite()
-				this.skillWindow.skillIcon.bitmap = ImageManager.loadSystem('iconSet');
+				this.skillWindow.skillIcon.bitmap = ImageManager.loadSystem('IconSet');
 				this.skillWindow.skillIcon.setFrame(iconSet % 16*32,Math.floor(iconSet / 16)*32,32,32);
 				this.skillWindow.skillIcon.x = this.skillWindow.x + ((i % 5)* 58) + 16;
 				this.skillWindow.skillIcon.y = this.skillWindow.y + 76 + Math.floor( i / 5 )* 64;
@@ -397,7 +397,7 @@ Scene_Map.prototype.updateSkillWindow = function() {
 			this.skillWindow.skillsWordsArray[i].levelVar = levelVar;
 			this.skillWindow.skillsWordsArray[i].maxLevel = maxLevel;
 
-			this.skillWindow.skillsStayArray[i].bitmap = ImageManager.loadSystem('iconSet');
+			this.skillWindow.skillsStayArray[i].bitmap = ImageManager.loadSystem('IconSet');
 			this.skillWindow.skillsStayArray[i].setFrame(iconSet % 16*32,Math.floor(iconSet / 16)*32,32,32);
 			this.skillWindow.skillsStayArray[i].x = this.skillWindow.x + ((this.skillWindow.skillsStayArray[i].positionSave % 5)* 58) + 16;
 			this.skillWindow.skillsStayArray[i].y = this.skillWindow.y + 76 + Math.floor( this.skillWindow.skillsStayArray[i].positionSave / 5 )* 64;
@@ -408,7 +408,7 @@ Scene_Map.prototype.updateSkillWindow = function() {
 			this.skillWindow.skillsStayArray[i].levelVar = levelVar;
 			this.skillWindow.skillsStayArray[i].maxLevel = maxLevel;
 
-			this.skillWindow.skillsArray[i].bitmap = ImageManager.loadSystem('iconSet');
+			this.skillWindow.skillsArray[i].bitmap = ImageManager.loadSystem('IconSet');
 			this.skillWindow.skillsArray[i].setFrame(iconSet % 16*32,Math.floor(iconSet / 16)*32,32,32);
 			if(!this.isHandledItem){
 				this.skillWindow.skillsArray[i].anchor.x = 0;

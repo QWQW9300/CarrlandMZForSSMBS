@@ -280,7 +280,7 @@ Scene_Map.prototype.updateShop = function(){
 				if(sxlSimpleShop.sellOut){
 					var newItem = new Sprite();
 					newItem.item = this.item;
-					newItem.bitmap = ImageManager.loadSystem('iconSet');
+					newItem.bitmap = ImageManager.loadSystem('IconSet');
 					newItem.setFrame(newItem.item.iconIndex % 16*32,Math.floor(newItem.item.iconIndex / 16)*32,32,32);
 					sxlSimpleShop.window.items.push(newItem)
 					newItem.x = (sxlSimpleShop.window.x + 13)+(sxlSimpleShop.window.items.length-1)%7*40;
@@ -368,7 +368,7 @@ sxlSimpleShop.createShop = function(face,word,setItems,sellOut){
 	}
 	for( i in setItems ){
 		var itemSprite = new Sprite();
-		itemSprite.bitmap = ImageManager.loadSystem('iconSet');
+		itemSprite.bitmap = ImageManager.loadSystem('IconSet');
 		itemSprite.setFrame(setItems[i].iconIndex % 16*32,Math.floor(setItems[i].iconIndex / 16)*32,31,31);
 		itemSprite.x = (sxlSimpleShop.window.x + 13)+i%7*40;
 		itemSprite.y = (sxlSimpleShop.window.y + 120)+Math.floor(i/7)*40;
