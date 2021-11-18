@@ -2028,13 +2028,14 @@ Scene_Map.prototype.showInformation = function() {
 				line ++
 				var needLevel = this.itemInform.meta.needLevel?this.itemInform.meta.needLevel:1;
 				var maxLevel = this.itemInform.meta.maxLevel?this.itemInform.meta.maxLevel:1;
-				var skillLevel = this.itemInform.meta.levelVar?$gameVariables.value(this.itemInform.meta.levelVar):1;
+				var skillLevel = $gameParty.members()[0].skillLevelsPoints[this.itemInform.id];
+				var skillLevelEquipAdd = $gameParty.members()[0].skillLevelsPlus[this.itemInform.id]?'(+'+Number($gameParty.members()[0].skillLevelsPlus[this.itemInform.id])+')':'';
 				var skillCoolDown = this.itemInform.meta.cooldown?Math.floor(this.itemInform.meta.cooldown/60*100)/100:0.5;
-				if( !this.itemInform.meta.levelVar && this.userSkillWindow && sxlSkillWindow.member.hasSkill(this.itemInform.id)){
-					skillLevel = 1;
-				}else if (this.userSkillWindow && !sxlSkillWindow.member.hasSkill(this.itemInform.id)){
-					skillLevel = 0 ;
-				};
+				// if( !this.itemInform.meta.levelVar && this.userSkillWindow && sxlSkillWindow.member.hasSkill(this.itemInform.id)){
+				// 	skillLevel = 1;
+				// }else if (this.userSkillWindow && !sxlSkillWindow.member.hasSkill(this.itemInform.id)){
+				// 	skillLevel = 0 ;
+				// };
 			
 				this.information.bitmap.fontBold = true;
 				this.information.bitmap.drawText('技能参数：',TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');
@@ -2046,7 +2047,7 @@ Scene_Map.prototype.showInformation = function() {
 					this.information.bitmap.drawText(infromPreffix+'前置技能: '+$dataSkills[this.itemInform.meta.needSkill].name,TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');	
 					line ++
 				};
-				this.information.bitmap.drawText(infromPreffix+'技能等级: '+skillLevel+'/'+maxLevel,TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');
+				this.information.bitmap.drawText(infromPreffix+'技能等级: '+skillLevel+skillLevelEquipAdd+'/'+maxLevel,TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');
 				line ++
 				if(skillCoolDown!=0){
 					this.information.bitmap.drawText(infromPreffix+'冷却时间: '+skillCoolDown+'秒',TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');	

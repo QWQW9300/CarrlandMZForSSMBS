@@ -382,7 +382,7 @@ Scene_Map.prototype.update = function() {
 	}
 	if(sxlSimpleABS.requestRefreshMember == true){
 		this.loadMembersPlayers();
-		if(sxlSimpleFaces) this.createFaces();
+		// if(sxlSimpleFaces) this.createFaces();
 		sxlSimpleABS.requestRefreshMember = false;
 	};
 	//左右双方向控制
@@ -912,6 +912,7 @@ Scene_Map.prototype.updateCanMoveTime = function(){
 			}
 		}
 		if(!playerChar.rushCount) playerChar.rushCount = 0;
+		if(Math.floor(playerChar.rushCount) == 0 ) playerChar.rushCount = 0;
 		if(playerChar.rushCount == 0){
 			playerChar.rushAngle = Math.atan2((playerChar.screenY()-TouchInput.y), (playerChar.screenX()-TouchInput.x))*(180/Math.PI)+270;
 			if(playerChar.rushAngle<0){
@@ -1161,6 +1162,7 @@ Scene_Map.prototype.updateCanMoveTime = function(){
 			theEvent._stun --;
 		}
 		if(!theEvent.rushCount) theEvent.rushCount = 0;
+		if(Math.floor(theEvent.rushCount) == 0 ) theEvent.rushCount = 0;
 		if( theEvent.rushCount != 0 ){
 			if(theEvent.rushCount > 0 && !theEvent.isMoving()){
 				theEvent.moveForward();
@@ -2190,11 +2192,13 @@ Scene_Map.prototype.enemyAction = function(){
 					var skillDistance = user.cnt * 100 + skillDistanceMeta ;
 					if( distanceX <= skillDistance && 
 						distanceY <= skillDistance && 
+						skill &&
 						$gameMap.events()[i]._battler._tp >= 100 &&
 						! userChar.locked &&
 						$gameParty.members()[j]._hp > 0 &&
 						!$gameParty.members()[j].isStateAffected(1) &&
-						!$gameParty.members()[j].player.vanish)
+						!$gameParty.members()[j].player.vanish &&
+						!$gameMap.events()[i].isJumping())
 						{	
 							$gameMap.events()[i]._battler._tp -= 100;
 							// console.log($gameMap.events()[i]._battler._tp)
@@ -2399,8 +2403,8 @@ Scene_Map.prototype.hitBack = function(target, user, skill, forward ){
 		}else{
 			var targetDistanceKB = target._battler.grd;
 		};
-		
-		var KBdistance = skillKnockBack + ( userKnockBuff * 100 + 1 ) - ( targetDistanceKB + 1 );
+		let skillSlvBuff = skill.meta.slvEffectHitBack?Number(skill.meta.slvEffectHitBack):0;
+		var KBdistance = skillKnockBack + ( userKnockBuff * 100 + 1 ) - ( targetDistanceKB + 1 )+(user.skillLevels?skillSlvBuff*user.skillLevels[skill.id]:0);
 		if(KBdistance>0){
 			
 			if(userChar._direction == 2){
@@ -2448,7 +2452,8 @@ Scene_Map.prototype.hitBack = function(target, user, skill, forward ){
 					
 			for( i = 0 ; i < KBdistance ; i ++ ){
                 // if(!target.isJumping()){
-                target.jump(0,0,Number(skill.meta.hitHeight));
+				let skillSlvFly = skill.meta.slvEffectHitHeight?Number(skill.meta.slvEffectHitHeight):0;
+                target.jump(0,0,Number(skill.meta.hitHeight)+(user.skillLevels?skillSlvFly*user.skillLevels[skill.id]:0));
                 // }
 				target.dotMoveByDeg(target.kbAngle);
 				// if(forward){
@@ -2498,7 +2503,7 @@ Scene_Map.prototype.rush = function(user, target,distance ){
 	if(target){
 
 	}else{
-		user.rushCount = distance;
+		user.rushCount = Math.floor(distance);
 	}
 };
 

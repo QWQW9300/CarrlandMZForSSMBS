@@ -226,6 +226,17 @@ Scene_Map.prototype.updateInventory = function(){
 	if( this.gridsHasItem[SSMBS_Window_Inventory.firstEmptyGrid]!='empty'){
 		SSMBS_Window_Inventory.firstEmptyGrid = SSMBS_Window_Inventory.gridsPerLine*$gameParty.inventorySize+1;
 	}
+	if(TouchInput.isHovered()){
+		// if(SSMBS_Window_Inventory.nowPickedItem){
+		// 	SSMBS_Window_Inventory.nowPickedItemStore = SSMBS_Window_Inventory.nowPickedItem;
+		// }
+		this.isDrawing = false;
+		this.isHandledItem = null;
+		this.touchIcon.item = null;
+		this.item = null;
+		this.isDrawingItem = false;
+		this.nowPickedItem = null;
+	}
 	let hasItem;
 	if(hasItem!= $gameParty.allItems().length){
 		//清空不拥有物品的位置信息
@@ -465,7 +476,17 @@ Scene_Map.prototype.updateInventory = function(){
 				this.itemType = 'item';
 				this.isDrawingItem = true;
 			}
-			
+			if(TouchInput.isHovered()){
+				// if(SSMBS_Window_Inventory.nowPickedItem){
+				// 	SSMBS_Window_Inventory.nowPickedItemStore = SSMBS_Window_Inventory.nowPickedItem;
+				// }
+				this.isDrawing = false;
+				this.isHandledItem = null;
+				this.touchIcon.item = null;
+				this.item = null;
+				this.isDrawingItem = false;
+				this.nowPickedItem = null;
+			}
 			//使用物品
 			if( TouchInput.isCancelled() && !this.nowPickedItem && !this.isDrawing ){
 				let item = this.gridsHasItem[i+SSMBS_Window_Inventory.listFirstLine*SSMBS_Window_Inventory.gridsPerLine];
@@ -499,7 +520,7 @@ Scene_Map.prototype.updateInventory = function(){
 				// this.gridsHasItem[j+SSMBS_Window_Inventory.listFirstLine*SSMBS_Window_Inventory.gridsPerLine].positionInInventory = j+SSMBS_Window_Inventory.listFirstLine*SSMBS_Window_Inventory.gridsPerLine;
 				SSMBS_Window_Inventory.saveItemPositon(this.gridsHasItem[j+SSMBS_Window_Inventory.listFirstLine*SSMBS_Window_Inventory.gridsPerLine],j+SSMBS_Window_Inventory.listFirstLine*SSMBS_Window_Inventory.gridsPerLine);
 				//装备拖动则卸下装备
-				if( this.itemType = 'equiped' && this.nowPickedItem.etypeId){
+				if( this.itemType = 'equiped' && this.isDrawingItem && this.nowPickedItem.etypeId){
 					let type = this.nowPickedItem.wtypeId?'weapon':'armor';
 					if (type == 'weapon'){
 						$gameParty.members()[0].changeEquip( 0 , $dataWeapons[1] ) ;
@@ -589,17 +610,7 @@ Scene_Map.prototype.updateInventory = function(){
 			}
 		}
 	}
-	if(TouchInput.isHovered()){
-		// if(SSMBS_Window_Inventory.nowPickedItem){
-		// 	SSMBS_Window_Inventory.nowPickedItemStore = SSMBS_Window_Inventory.nowPickedItem;
-		// }
-		this.isDrawing = false;
-		this.isHandledItem = null;
-		this.touchIcon.item = null;
-		this.item = null;
-		this.isDrawingItem = false;
-		this.nowPickedItem = null;
-	}
+	
 	//滚轮滚动进度条
 	if( TouchInput.x>this.inventoryWindowGrid.x && TouchInput.x<this.inventoryWindowGrid.x+SSMBS_Window_Inventory.width
 		&& TouchInput.y>this.inventoryWindowGrid.y && TouchInput.y<this.inventoryWindowGrid.y+SSMBS_Window_Inventory.height){

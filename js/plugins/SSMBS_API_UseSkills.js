@@ -70,11 +70,11 @@ sxlSimpleABS.useSkill = function(skill,user,target,forced){
 			//跳
 			if(stepName=='jump'){
 				let stepParamNumber = Number(stepParam);
-				user.sequence.push({stepName:stepName,stepParam:stepParamNumber});
+				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam:stepParamNumber});
 			}
 			//姿态
 			if(stepName=='pose'){
-				user.sequence.push({stepName:stepName,stepParam:stepParam,stepParam2:Number(stepParam2)});
+				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam:stepParam,stepParam2:Number(stepParam2)});
 			}
 			//弹道
 			if(stepName=='trigger'){
@@ -84,70 +84,70 @@ sxlSimpleABS.useSkill = function(skill,user,target,forced){
 				}else{
 					pSkill = $dataSkills[Number(stepParam)];
 				}
-				user.sequence.push({stepName:stepName,stepParam: pSkill,stepParam2:stepParam2,stepParam3:Number(stepParam3),target:target});
+				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam: pSkill,stepParam2:stepParam2,stepParam3:Number(stepParam3),target:target});
 
 			}
 			//状态增加
 			if(stepName=='addState'){
-				user.sequence.push({stepName:stepName,stepParam:Number(stepParam)});
+				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam:Number(stepParam),addPerSlv:Number(stepParam)});
 			}
 			//状态去除
 			if(stepName=='removeState'){
-				user.sequence.push({stepName:stepName,stepParam:Number(stepParam)});
+				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam:Number(stepParam),addPerSlv:Number(stepParam)});
 			}
 			//等待
 			if(stepName=='wait' || stepName=='waitAttack' || stepName=='waitSpell'){
-				user.sequence.push({stepName:stepName,stepParam:Number(stepParam)});
+				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam:Number(stepParam)});
 			}
 			//冲刺
 			if(stepName=='rush'){
 				if(stepParam2 == 'true') stepParam2 = true;
 				if(stepParam2 == 'false') stepParam2 = false;
-				user.sequence.push({stepName:stepName,stepParam:Number(stepParam),stepParam2:stepParam2});
+				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam:Number(stepParam),stepParam2:stepParam2});
 			}
 			//音效
 			if(stepName=='se'){
 				if(!stepParam2) stepParam2 = 90;
 				if(!stepParam3) stepParam3 = 100;
-				user.sequence.push({stepName:stepName,stepParam:stepParam,stepParam2:Number(stepParam2),stepParam3:Number(stepParam3)});
+				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam:stepParam,stepParam2:Number(stepParam2),stepParam3:Number(stepParam3)});
 			}
 			//动画
 			if(stepName=='animation'){
 				if(stepParam3 == 'true') stepParam2 = true;
 				if(stepParam3 == 'false') stepParam2 = false;
-				user.sequence.push({stepName:stepName,stepParam:stepParam,stepParam2:stepParam2});
+				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam:stepParam,stepParam2:stepParam2});
 			}
 			//锁定
 			if(stepName=='user locked' || stepName=='locked'){
-				user.sequence.push({stepName:stepName});
+				user.sequence.push({skillId: skill.id ,stepName:stepName});
 			}
 			//解锁
 			if(stepName=='user unlocked' || stepName=='unlocked'){
-				user.sequence.push({stepName:stepName});
+				user.sequence.push({skillId: skill.id ,stepName:stepName});
 			}
 			//霸体
 			if(stepName=='user endure on' || stepName=='endure on'){
-				user.sequence.push({stepName:stepName});
+				user.sequence.push({skillId: skill.id ,stepName:stepName});
 			}
 			//解除霸体
 			if(stepName=='user endure off' || stepName=='endure off'){
-				user.sequence.push({stepName:stepName});
+				user.sequence.push({skillId: skill.id ,stepName:stepName});
 			}
 			//公共事件
 			if(stepName=='commonEvent'){
-				user.sequence.push({stepName:stepName,stepParam:Number(stepParam)});
+				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam:Number(stepParam)});
 			}
 			//方向锁定
 			if(stepName=='user directionFix on' || stepName=='directionFix on'){
-				user.sequence.push({stepName:stepName});
+				user.sequence.push({skillId: skill.id ,stepName:stepName});
 			}
 			//方向锁定解除
 			if(stepName=='user directionFix off' || stepName=='directionFix off'){
-				user.sequence.push({stepName:stepName});
+				user.sequence.push({skillId: skill.id ,stepName:stepName});
 			}
 			//召唤
 			if(stepName=='summon'){
-				user.sequence.push({stepName:stepName,stepParam:Number(stepParam),stepParam2:Number(stepParam2),stepParam3:Number(stepParam3),skillId:Number(skill.id)});
+				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam:Number(stepParam),stepParam2:Number(stepParam2),stepParam3:Number(stepParam3)});
 			}
 		}
 	}
@@ -156,30 +156,46 @@ sxlSimpleABS.useSkill = function(skill,user,target,forced){
 Scene_Map.prototype.updateSequence = function(){
 
 	for( user of sxlSimpleABS.sequenceUser ){
-		
 		if( user && user.battler() && user.sequence.length > 0){
 			let stepSequence = user.sequence[0];
+			let skill = $dataSkills[stepSequence.skillId]
+			let linkSkill = skill;
+			if(skill && skill.meta.linkSkill){
+				linkSkill = $dataSkills[Number(skill.meta.linkSkill)];
+			}
 			// 等待
 			if(stepSequence.stepName=='wait' && user.sequencesWait<=0 ){
+				let slvEffect = 0;
+				if(user.battler().skillLevels && skill.meta.slvEffectWait){
+					slvEffect = Number( skill.meta.slvEffectWait )*user.battler().skillLevels[linkSkill.id];
+				}
 				if(user.isStuned() && !user.endure){
 					// 被控制时跳过
 					user.sequence.splice(0,1);
 				}else{
-					user.sequencesWait = Number(stepSequence.stepParam);
+					user.sequencesWait = Math.max(Number(stepSequence.stepParam)-slvEffect,0);
 					user.sequence.splice(0,1);
 				}
 			}
 			if(stepSequence.stepName=='waitAttack' && user.sequencesWait<=0 ){
+				let slvEffect = 0;
+				if(user.battler().skillLevels && skill.meta.slvEffectWaitAttack){
+					slvEffect = Number( skill.meta.slvEffectWaitAttack )*user.battler().skillLevels[linkSkill.id];
+				}
 				if(user.isStuned() && !user.endure){
 					// 被控制时跳过
 					user.sequence.splice(0,1);
 				}else{
 					let attackSpeed = (1-user.battler().trg)
-					user.sequencesWait = Math.max(Number(stepSequence.stepParam)*attackSpeed,0);
+					user.sequencesWait = Math.max(Number(stepSequence.stepParam)*attackSpeed-slvEffect,0);
 					user.sequence.splice(0,1);
 				}
 			}
 			if(stepSequence.stepName=='waitSpell' && user.sequencesWait<=0){
+				let slvEffect = 0;
+				if(user.battler().skillLevels && skill.meta.slvEffectWaitSpell){
+					slvEffect = Number( skill.meta.slvEffectWaitSpell )*user.battler().skillLevels[linkSkill.id];
+				}
 				if(user.isStuned() && !user.endure){
 					// 被控制时跳过
 					user.skillCast = 0;
@@ -188,7 +204,7 @@ Scene_Map.prototype.updateSequence = function(){
 				}else{
 					if(user.battler().castSpeed){
 						let spellSpeed = user.battler().castSpeed
-						user.sequencesWait = Math.max(Number(stepSequence.stepParam)*spellSpeed,0);
+						user.sequencesWait = Math.max(Number(stepSequence.stepParam)*spellSpeed-slvEffect,0);
 					}else{
 						user.sequencesWait = Number(stepSequence.stepParam)
 					}
@@ -225,6 +241,14 @@ Scene_Map.prototype.updateSequence = function(){
 					// 被控制时跳过
 					user.sequence.splice(0,1);
 				}else{
+					let slvEffect = 0;
+					let slvEffectAngle = 0;
+					if(skill && user.battler().skillLevels && skill.meta.slvEffecParticleAmount){
+						slvEffect =  Math.floor ((Number( skill.meta.slvEffecParticleAmount )/1)*user.battler().skillLevels[skill.id]);
+					}
+					if(skill && user.battler().skillLevels && skill.meta.slvEffectAngleAdjust){
+						slvEffectAngle =  Math.floor ( Number((skill.meta.slvEffectAngleAdjust) ));
+					}
 					if(stepSequence.stepParam2 == 'targetPosition'){
 						if(user!=$gamePlayer){
 							sxlSimpleABS.shootParticle(user, stepSequence.target, user.faction, stepSequence.stepParam,stepSequence.target.screenX(),stepSequence.target.screenY(),stepSequence.stepParam3);
@@ -234,6 +258,19 @@ Scene_Map.prototype.updateSequence = function(){
 						
 					}else{
 						sxlSimpleABS.shootParticle(user, stepSequence.target, user.faction, stepSequence.stepParam,null,null,stepSequence.stepParam3);
+					}
+					for( let i = 0 ; i < slvEffect ; i ++ ){
+						let fixAngle = i%2==0? slvEffectAngle*i: -slvEffectAngle*i;
+						if(stepSequence.stepParam2 == 'targetPosition'){
+							if(user!=$gamePlayer){
+								sxlSimpleABS.shootParticle(user, stepSequence.target, user.faction, stepSequence.stepParam,stepSequence.target.screenX(),stepSequence.target.screenY(),stepSequence.stepParam3,fixAngle);
+							}else{
+								sxlSimpleABS.shootParticle(user, stepSequence.target, user.faction, stepSequence.stepParam,TouchInput.x,TouchInput.y,stepSequence.stepParam3,fixAngle);
+							}
+							
+						}else{
+							sxlSimpleABS.shootParticle(user, stepSequence.target, user.faction, stepSequence.stepParam,null,null,stepSequence.stepParam3,fixAngle);
+						}
 					}
 					user.sequence.splice(0,1);
 
@@ -263,8 +300,12 @@ Scene_Map.prototype.updateSequence = function(){
 					user.rushCount = 0;
 					user.sequence.splice(0,1);
 				}else{
+					let slvEffect = 0;
+					if(user.battler().skillLevels && skill.meta.slvEffectRush){
+						slvEffect = Number( skill.meta.slvEffectRush )*user.battler().skillLevels[linkSkill.id];
+					}
 					if(user.rushCount == 0){
-						user.rushCount = stepSequence.stepParam;
+						user.rushCount = stepSequence.stepParam+slvEffect;
 					}
 					if(!stepSequence.stepParam2){
 						user.sequence.splice(0,1);
@@ -391,7 +432,7 @@ Scene_Map.prototype.updateSequence = function(){
 				}else{
 					let skill = $dataSkills[stepSequence.skillId]
 					if(skill.meta.levelVar){
-						let skillLevel = $gameVariables.value(Number(skill.meta.levelVar));
+						let skillLevel = user.battler().skillLevels[linkSkill.id];
 						if(skill.meta.levelToHP){
 							$gameActors.actor(Number(stepSequence.stepParam))._paramPlus[0] = skillLevel*Number(skill.meta.levelToHP)
 						}
@@ -440,9 +481,9 @@ Scene_Map.prototype.updateSequence = function(){
 	
 };
 
-sxlSimpleABS.shootParticle = function(user,target,faction,skill,storeX,storeY,nextSkillId){
+sxlSimpleABS.shootParticle = function(user,target,faction,skill,storeX,storeY,nextSkillId,angle){
 	//创造弹道
-	sxlSimpleABS.spritesetMap.createParticle(user,target,faction,skill,storeX,storeY,nextSkillId);
+	sxlSimpleABS.spritesetMap.createParticle(user,target,faction,skill,storeX,storeY,nextSkillId,angle);
 
 };
 

@@ -28,7 +28,7 @@ Spriteset_Map.prototype.update = function() {
 	};
 };
 
-Spriteset_Map.prototype.createParticle = function(user,target,faction,skill,storeX,storeY,nextSkillId){
+Spriteset_Map.prototype.createParticle = function(user,target,faction,skill,storeX,storeY,nextSkillId,angle){
 	var userX = user.screenX();
 	var userY = user.screenY();
 	if(target){
@@ -133,7 +133,7 @@ Spriteset_Map.prototype.createParticle = function(user,target,faction,skill,stor
 	this.particle.faction = faction;
 	this.particle.skill = skill;
 	this.particle.speed = skill.speed;
-	this.particle.speed/=sxlSimpleABS.skillSpeedBase
+	this.particle.speed/=sxlSimpleABS.skillSpeedBase;
 	if(user == $gamePlayer && sxlSimpleABS.moveAttackMode && !skill.meta.constantSpeed){
 		this.particle.speed *= (1+$gameParty.members()[0].cnt);
 	}
@@ -199,6 +199,12 @@ Spriteset_Map.prototype.createParticle = function(user,target,faction,skill,stor
 	}
 	if(skill.meta.cantReflect){
 		this.particle.cantReflect = true;
+	}
+	if(angle){
+		this.particle.moveAngleSet = angle;
+	}
+	if(skill.meta.moveAngle){
+		this.particle.moveAngleSet = skill.meta.moveAngle;
 	}
 	this._tilemap.addChild(this.particle);
 	this._tilemap.addChild(this.particle.animSprite)
@@ -332,9 +338,11 @@ Spriteset_Map.prototype.moveParticle = function(){
 						
 					particle.radian = Math.atan2( distanceY, distanceX );
 					particle.angle = particle.radian*180/Math.PI ;
-					if( skill.meta.moveAngle ){
-						particle.moveAngle = Number(skill.meta.moveAngle)*Math.PI/180;
+					if( particle.moveAngleSet){
+						particle.moveAngle = Number(particle.moveAngleSet)*Math.PI/180;
 						particle.radian = Math.atan2( distanceY, distanceX )+particle.moveAngle;
+						particle.angle = particle.radian*180/Math.PI ;
+						console.log(particle.angle)
 					}
 					
 				}
@@ -373,11 +381,11 @@ Spriteset_Map.prototype.moveParticle = function(){
 				if(!particle.radian ){
 					particle.radian = Math.atan2( distanceY, distanceX );
 					particle.angle = particle.radian*180/Math.PI ;
-					if( skill.meta.moveAngle ){
-						particle.angle = particle.radian*180/Math.PI+Number(skill.meta.moveAngle ) ;
-						particle.moveAngle = Number(skill.meta.moveAngle)*Math.PI/180;
+					if( particle.moveAngleSet){
+						particle.moveAngle = Number(particle.moveAngleSet)*Math.PI/180;
 						particle.radian = Math.atan2( distanceY, distanceX )+particle.moveAngle;
-						
+						particle.angle = particle.radian*180/Math.PI ;
+						console.log(particle.angle)
 					}
 				}
 
