@@ -2041,13 +2041,31 @@ Scene_Map.prototype.showInformation = function() {
 				this.information.bitmap.drawText('技能参数：',TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');
 				this.information.bitmap.fontBold = false;
 				line ++
+				if($gameParty.members()[sxlSimpleItemList.actor].level>=Number(needLevel)){
+					this.information.bitmap.textColor = ColorManager.textColor(0);
+				}else{
+					this.information.bitmap.textColor = ColorManager.textColor(7);
+				}
 				this.information.bitmap.drawText(infromPreffix+'需要等级: '+needLevel,TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');
+				this.information.bitmap.textColor = ColorManager.textColor(0);
 				line ++
 				if(this.itemInform.meta.needSkill){
+					if($gameParty.members()[sxlSimpleItemList.actor].hasSkill(Number(this.itemInform.meta.needSkill))){
+						this.information.bitmap.textColor = ColorManager.textColor(0);
+					}else{
+						this.information.bitmap.textColor = ColorManager.textColor(7);
+					}
 					this.information.bitmap.drawText(infromPreffix+'前置技能: '+$dataSkills[this.itemInform.meta.needSkill].name,TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');	
+					this.information.bitmap.textColor = ColorManager.textColor(0);
 					line ++
 				};
+				if($gameParty.members()[sxlSimpleItemList.actor].hasSkill(Number(this.itemInform.id))){
+					this.information.bitmap.textColor = ColorManager.textColor(0);
+				}else{
+					this.information.bitmap.textColor = ColorManager.textColor(7);
+				}
 				this.information.bitmap.drawText(infromPreffix+'技能等级: '+skillLevel+skillLevelEquipAdd+'/'+maxLevel,TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');
+				this.information.bitmap.textColor = ColorManager.textColor(0);
 				line ++
 				if(skillCoolDown!=0){
 					this.information.bitmap.drawText(infromPreffix+'冷却时间: '+skillCoolDown+'秒',TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');	

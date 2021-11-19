@@ -175,6 +175,27 @@ Scene_Map.prototype.update = function() {
 		this.inventoryWindow.y = $gameSystem.windowInventoryY?$gameSystem.windowInventoryY:SSMBS_Window_Inventory.defaultY;
 		SSMBS_Window_Inventory.isOpen = !SSMBS_Window_Inventory.isOpen;
 	}
+	if(this.touchIcon){
+		this.touchIcon.x = TouchInput.x;
+		this.touchIcon.y = TouchInput.y;
+		if(TouchInput.isHovered()){
+			// if(SSMBS_Window_Inventory.nowPickedItem){
+			// 	SSMBS_Window_Inventory.nowPickedItemStore = SSMBS_Window_Inventory.nowPickedItem;
+			// }
+			this.isDrawing = false;
+			this.isHandledItem = null;
+			this.touchIcon.item = null;
+			this.item = null;
+			this.isDrawingItem = false;
+			this.nowPickedItem = null;
+		}
+		if(this.nowPickedItem){
+			this.touchIcon.setFrame(this.touchIcon.item.iconIndex % 16*32,Math.floor(this.touchIcon.item.iconIndex / 16)*32,32,32);
+		}else{
+			this.touchIcon.setFrame(0 % 16*32,Math.floor(0 / 16)*32,32,32);
+		}
+	}
+	
 	
 };
 
@@ -218,8 +239,7 @@ Scene_Map.prototype.updateInventory = function(){
 	this.inventoryWindowGrid.y = this.inventoryWindow.y;
 	this.inventoryWindowItemIcons.x = this.inventoryWindow.x;
 	this.inventoryWindowItemIcons.y = this.inventoryWindow.y;
-	this.touchIcon.x = TouchInput.x;
-	this.touchIcon.y = TouchInput.y;
+	
 	if(!this.nowPickedItem){
 		this.itemType = null;
 	}
@@ -230,12 +250,12 @@ Scene_Map.prototype.updateInventory = function(){
 		// if(SSMBS_Window_Inventory.nowPickedItem){
 		// 	SSMBS_Window_Inventory.nowPickedItemStore = SSMBS_Window_Inventory.nowPickedItem;
 		// }
-		this.isDrawing = false;
-		this.isHandledItem = null;
-		this.touchIcon.item = null;
-		this.item = null;
-		this.isDrawingItem = false;
-		this.nowPickedItem = null;
+		// this.isDrawing = false;
+		// this.isHandledItem = null;
+		// this.touchIcon.item = null;
+		// this.item = null;
+		// this.isDrawingItem = false;
+		// this.nowPickedItem = null;
 	}
 	let hasItem;
 	if(hasItem!= $gameParty.allItems().length){
@@ -312,7 +332,7 @@ Scene_Map.prototype.updateInventory = function(){
 		SSMBS_Window_Inventory.scrollWidth,
 		SSMBS_Window_Inventory.gridsLines*(SSMBS_Window_Inventory.gridsSize+SSMBS_Window_Inventory.gridsSpace)-SSMBS_Window_Inventory.gridsSpace,
 		'#555555' );
-		if(TouchInput.isPressed() && !SSMBS_Window_Inventory.isDrawing ){
+		if(TouchInput.isPressed() && !this.isDrawing ){
 			this.isDrawing = true;
 			this.isDrawingScroll = true;
 		}
@@ -329,7 +349,7 @@ Scene_Map.prototype.updateInventory = function(){
 		this.isDrawingScroll = false;
 		this.isDrawing = false;
 	}
-	if(SSMBS_Window_Inventory.isDrawingScroll){
+	if(this.isDrawingScroll){
 		if(TouchInput.y>=this.inventoryWindow.y + (SSMBS_Window_Inventory.gridsStartY + 1)+(SSMBS_Window_Inventory.gridsLines*(SSMBS_Window_Inventory.gridsSize+SSMBS_Window_Inventory.gridsSpace)-SSMBS_Window_Inventory.gridsSpace)*(SSMBS_Window_Inventory.listFirstLine/$gameParty.inventorySize)-(((SSMBS_Window_Inventory.gridsSize+SSMBS_Window_Inventory.gridsSpace)-SSMBS_Window_Inventory.gridsSpace)*(SSMBS_Window_Inventory.gridsLines/$gameParty.inventorySize)/2)){
 			if(SSMBS_Window_Inventory.listFirstLine<$gameParty.inventorySize-SSMBS_Window_Inventory.gridsLines){
 				SSMBS_Window_Inventory.listFirstLine ++;
@@ -426,11 +446,11 @@ Scene_Map.prototype.updateInventory = function(){
 		if(this.inventoryWindow.y <= 0 ){
 			this.inventoryWindow.y = 0;
 		}
-		if(this.inventoryWindow.x + SSMBS_Window_Equip.width >= Graphics.width ){
-			this.inventoryWindow.x = Graphics.width - SSMBS_Window_Equip.width;
+		if(this.inventoryWindow.x + SSMBS_Window_Inventory.width >= Graphics.width ){
+			this.inventoryWindow.x = Graphics.width - SSMBS_Window_Inventory.width;
 		}
-		if(this.inventoryWindow.y + SSMBS_Window_Equip.drawWindowY >= Graphics.height ){
-			this.inventoryWindow.y = Graphics.height - SSMBS_Window_Equip.drawWindowY;
+		if(this.inventoryWindow.y + SSMBS_Window_Inventory.drawWindowY >= Graphics.height ){
+			this.inventoryWindow.y = Graphics.height - SSMBS_Window_Inventory.drawWindowY;
 		}
 		this.inventoryWindowGrid.x = this.inventoryWindow.x;
 		this.inventoryWindowGrid.y = this.inventoryWindow.y;
@@ -480,12 +500,12 @@ Scene_Map.prototype.updateInventory = function(){
 				// if(SSMBS_Window_Inventory.nowPickedItem){
 				// 	SSMBS_Window_Inventory.nowPickedItemStore = SSMBS_Window_Inventory.nowPickedItem;
 				// }
-				this.isDrawing = false;
-				this.isHandledItem = null;
-				this.touchIcon.item = null;
-				this.item = null;
-				this.isDrawingItem = false;
-				this.nowPickedItem = null;
+				// this.isDrawing = false;
+				// this.isHandledItem = null;
+				// this.touchIcon.item = null;
+				// this.item = null;
+				// this.isDrawingItem = false;
+				// this.nowPickedItem = null;
 			}
 			//使用物品
 			if( TouchInput.isCancelled() && !this.nowPickedItem && !this.isDrawing ){
@@ -504,7 +524,7 @@ Scene_Map.prototype.updateInventory = function(){
 	}
 	//放置物品
 	for( j = 0 ;j < this.gridsHasItem.length ; j ++ ){
-		if( TouchInput.isReleased() && this.nowPickedItem && 
+		if( TouchInput.isReleased() && this.nowPickedItem && (this.itemType == 'item' || this.itemType == 'equiped') &&
 			TouchInput.x > this.inventoryWindowGrid.x + SSMBS_Window_Inventory.gridsStartX + (j%SSMBS_Window_Inventory.gridsPerLine)*(SSMBS_Window_Inventory.gridsSize+SSMBS_Window_Inventory.gridsSpace)
 			&& TouchInput.x < this.inventoryWindowGrid.x + SSMBS_Window_Inventory.gridsStartX + (j%SSMBS_Window_Inventory.gridsPerLine)*(SSMBS_Window_Inventory.gridsSize+SSMBS_Window_Inventory.gridsSpace)+SSMBS_Window_Inventory.gridsSize
 			&& TouchInput.y > this.inventoryWindowGrid.y + SSMBS_Window_Inventory.gridsStartY + Math.floor(j/SSMBS_Window_Inventory.gridsPerLine)*(SSMBS_Window_Inventory.gridsSize+SSMBS_Window_Inventory.gridsSpace)

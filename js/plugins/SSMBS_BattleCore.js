@@ -972,7 +972,7 @@ Scene_Map.prototype.updateCanMoveTime = function(){
 			}
 			var equipsHPSteal = 0;
 			var stateHPSteal = 0;
-			for( let e = 0 ; e < $gameParty.members()[i].equips() ; e ++ ){
+			for( let e = 0 ; e < $gameParty.members()[i].equips().length ; e ++ ){
 				let equip = $gameParty.members()[i].equips()[e];
 				if(equip.meta.HPSteal){
 					equipsHPSteal += Number(equip.meta.HPSteal)

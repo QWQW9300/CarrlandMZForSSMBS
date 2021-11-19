@@ -137,6 +137,11 @@ Spriteset_Map.prototype.createParticle = function(user,target,faction,skill,stor
 	if(user == $gamePlayer && sxlSimpleABS.moveAttackMode && !skill.meta.constantSpeed){
 		this.particle.speed *= (1+$gameParty.members()[0].cnt);
 	}
+	if(user == $gamePlayer && sxlSimpleABS.moveAttackMode && !skill.meta.constantSpeed && skill.meta.slvEffectSpeed){
+		this.particle.speed += Number(skill.meta.slvEffectSpeed)*user.battler().skillLevels[skill.id];
+        console.log('~ this.particle.speed', this.particle.speed);
+		
+	}
 
 	this.particle.user = user;
 	this.particle.userMember = userMember;
