@@ -67,6 +67,7 @@ Scene_Map.prototype.update = function() {
 		this.skillIcon.opacity = 0;
 	}
 	if(Input.isTriggered(SSMBS_Window_Skills.hotKey)){
+		SoundManager.playCursor();
 		SSMBS_Window_Skills.isOpen = !SSMBS_Window_Skills.isOpen;
 		this.skillWindow.x = $gameSystem.windowSkillX?$gameSystem.windowSkillX:SSMBS_Window_Skills.defaultX;
 		this.skillWindow.y = $gameSystem.windowSkillY?$gameSystem.windowSkillY:SSMBS_Window_Skills.defaultY;
@@ -131,13 +132,12 @@ Scene_Map.prototype.equipAddSkill = function(){
 				let level = Number($gameParty.members()[0].equips()[i].meta.skillLevel.split(',')[s].split('+')[1]);
 				$gameParty.members()[0].skillLevelsPlus[skill] += level;
 			}
-			
 		}
 	}
 };
 
 Scene_Map.prototype.calcSkillLevel = function(){
-	for(let i = 0 ; i < $gameParty.members()[0].equips().length ; i ++ ){
+	for(let i = 0 ; i < $gameParty.members()[0].skillLevels.length ; i ++ ){
 		$gameParty.members()[0].skillLevels[i]=$gameParty.members()[0].skillLevelsPlus[i]+$gameParty.members()[0].skillLevelsPoints[i];
 	}
 };
@@ -203,7 +203,7 @@ Scene_Map.prototype.updateSkillWindow = function(){
 		SSMBS_Window_Skills.xDelta = 0;
 		SSMBS_Window_Skills.yDelta = 0;
 	}
-	if(this.drawingWindow == 'skill'){
+	if(TouchInput.isPressed() && !this.nowPickedItem && this.drawingWindow == 'skill'){
 		this.skillWindow.x += (TouchInput.x - this.skillWindow.x)-SSMBS_Window_Skills.xDelta;
 		this.skillWindow.y += (TouchInput.y - this.skillWindow.y)-SSMBS_Window_Skills.yDelta;
 		//防止出屏
@@ -297,15 +297,15 @@ Scene_Map.prototype.updateSkillWindow = function(){
 						)
 						//学习技能
 						if(
-						($gameParty.members()[0].skillPoints>=$dataSkills[skill].meta.skpCost? Number($dataSkills[skill].meta.skpCost):1) && 
+						($gameParty.members()[0].skillPoints>=Number($dataSkills[skill].meta.skpCost)? Number($dataSkills[skill].meta.skpCost):1) && 
 						($dataSkills[skill].meta.needlevel? $gameParty.members()[0].level>=Number($dataSkills[skill].meta.needlevel) : true) &&
-						($dataSkills[skill].meta.needSkill? $gameParty.members()[0].hasSkill[Number($dataSkills[skill].meta.needSkill)] : true)
+						($dataSkills[skill].meta.needSkill? $gameParty.members()[0].hasSkill(Number($dataSkills[skill].meta.needSkill)) : true)
 						 
 						){
 							if(TouchInput.isClicked() && SSMBS_Window_Skills.clickCd == 0){
 								if( $gameParty.members()[0].skillLevelsPoints[skill] < skillMaxLevel ){
 									$gameParty.members()[0].skillLevelsPoints[skill]+=1;
-									$gameParty.members()[0].skillPoints-=1;
+									$gameParty.members()[0].skillPoints-=$dataSkills[skill].meta.skpCost;
 									SSMBS_Window_Skills.clickCd = 1;
 								}
 								if($gameParty.members()[0].skillLevelsPoints[skill]>0&&!$gameParty.members()[0].hasSkill(skill)){
@@ -329,7 +329,7 @@ Scene_Map.prototype.updateSkillWindow = function(){
 						if(!this.isDrawing){
 							this.itemInform = $dataSkills[ skill ];
 						}
-						if($gameParty.members()[0].hasSkill(skill) && TouchInput.isPressed() ){
+						if($gameParty.members()[0].hasSkill(skill) && TouchInput.isPressed() && !this.nowPickedItem && !this.isDrawing ){
 							this.isDrawing = true;
 							this.nowPickedItem = $dataSkills[ skill ];
 							this.touchIcon.item = $dataSkills[ skill ];
@@ -408,7 +408,6 @@ Scene_Map.prototype.updateSkillWindow = function(){
 							this.isHandledItem = this.touchIcon;
 							this.item = this.touchIcon.item;
 							this.itemType = 'skill';
-							this.isDrawingItem = true;
 						}
 					}
 					line ++ ;

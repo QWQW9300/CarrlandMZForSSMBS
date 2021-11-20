@@ -21,9 +21,17 @@ sxlSimpleABS.useSkill = function(skill,user,target,forced){
 			user._directionFix = false;
 		}
 	}
-	if(skill.scId && user == $gamePlayer){
+	if(user == $gamePlayer){
 		let cd = skill.meta.cooldown?Number(skill.meta.cooldown):30;
-		sxlSimpleABS.sceneMap.shorcutItem[skill.scId].cd = cd;
+		if(skill.meta.slvEffectCooldown){
+			cd -= Number(skill.meta.slvEffectCooldown)*user.battler().skillLevels[skill.id];
+		}
+		for( let s = 0 ; s < $gameParty.shortcutGirdItems.length ; s ++ ){
+			if( $gameParty.shortcutGirdItems[s]==skill){
+				$gameParty.triggerKeysCooldown[s] = cd;
+			}
+		}
+		
 	}
 	let animation = skill.animationId
 	user.skillCast = 0;
@@ -51,7 +59,13 @@ sxlSimpleABS.useSkill = function(skill,user,target,forced){
 			if(user.battler()._actorId) user.faction = 'player';
 			if(user.battler()._enemyId) user.faction = 'enemy';
 		}
-		user.battler()._mp -= skill.mpCost;
+		//蓝耗
+		let mpCost =  skill.mpCost*user.battler().mcr;
+		if(skill.meta.slvEffectMpCost){
+			mpCost-=Number(skill.meta.slvEffectMpCost);
+		}
+		mpCost=mpCost.clamp(0,Infinity);
+		user.battler()._mp -= mpCost;
 		let sequences = skill.meta.skillSequence.split('\n');
 		for(step of sequences){
 			let stepName = null;
@@ -283,14 +297,24 @@ Scene_Map.prototype.updateSequence = function(){
 					// 被控制时跳过
 					user.sequence.splice(0,1);
 				}else{
-					user.battler().addState(stepSequence.stepParam);
+					let slvEffect = 0;
+					if(user.battler().skillLevels && skill.meta.slvEffectUserAddState){
+						slvEffect = Number( skill.meta.slvEffectUserAddState.split(',')[0] )*user.battler().skillLevels[linkSkill.id]-1;
+						slvEffect = slvEffect.clamp(0,Number( skill.meta.slvEffectUserAddState.split(',')[1] ))
+					}
+					user.battler().addState(stepSequence.stepParam+slvEffect);
 					user.sequence.splice(0,1);
 				}
 				
 			}
 			// 状态去除
 			if(stepSequence.stepName=='removeState' && user.sequencesWait<=0 ){
-				user.battler().removeState(stepSequence.stepParam);
+				let slvEffect = 0;
+				if(user.battler().skillLevels && skill.meta.slvEffectUserAddState){
+					slvEffect = Number( skill.meta.slvEffectUserAddState.split(',')[0] )*user.battler().skillLevels[linkSkill.id]-1;
+					slvEffect = slvEffect.clamp(0,Number( skill.meta.slvEffectUserAddState.split(',')[1] ))
+				}
+				user.battler().removeState(stepSequence.stepParam+slvEffect);
 				user.sequence.splice(0,1);
 			}
 			// 冲刺

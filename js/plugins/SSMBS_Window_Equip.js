@@ -55,6 +55,7 @@ Scene_Map.prototype.update = function() {
 	_SSMBS_Window_Equip_mapUpdate.call(this);
 	this.nowActor = SSMBS_Window_Equip.nowActor;
 	if(Input.isTriggered( SSMBS_Window_Equip.hotkey )){
+		SoundManager.playCursor();
 		SSMBS_Window_Inventory.isDrawingInventoryWindow = false;
 		this.equipWindow.x = $gameSystem.windowEquipX?$gameSystem.windowEquipX:SSMBS_Window_Equip.defaultX;
 		this.equipWindow.y = $gameSystem.windowEquipY?$gameSystem.windowEquipY:SSMBS_Window_Equip.defaultY;

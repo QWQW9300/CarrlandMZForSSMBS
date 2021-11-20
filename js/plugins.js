@@ -12,7 +12,6 @@ var $plugins =
 {"name":"SSMBS_API_UseItems","status":true,"description":"简易的地图战斗系统附属，使用物品的快捷方式","parameters":{}},
 {"name":"SSMBS_Loot","status":true,"description":"地图上掉落物品的插件","parameters":{"物品跳跃时间":"30","拾取物品范围":"96","金币图标切换的金额":"500","较少金币图标ID":"600","较多金币图标ID":"601","物品爆出时的音效":"Evasion1","拾取物品的音效":"Coin","物品光效合成方式":"0","全部收集按键":"z","显示名称按键":"alt"}},
 {"name":"SSMBS_ParticleSprite","status":true,"description":"弹道处理","parameters":{}},
-{"name":"SSMBS_ItemShortcut","status":true,"description":"物品、技能快捷栏","parameters":{"透明度变量ID":"20","快捷栏最大数量":"9","快捷栏X坐标调整":"0","快捷栏Y坐标调整":"-4","属性介绍宽度":"128","是否开启角色血槽":"1","角色血条X":"12","角色血条Y":"825"}},
 {"name":"SSMBS_Avartar","status":true,"description":"纸娃娃插件","parameters":{"主角发型变量ID":"10","发型红色调变量ID":"11","发型绿色调变量ID":"12","发型蓝色调变量ID":"13","发型灰色调变量ID":"14","武器渐隐":"0","光环呼吸效果":"1","光环范围效果":"1","武器偏移Y":"0","默认挥舞特效图片名称":"swingCircle","武器强化光效1~3":"289","武器强化光效4~6":"290","武器强化光效7~9":"291","武器强化光效10~12":"292","武器强化光效13~15":"292","武器强化光效16+":"292"}},
 {"name":"SSMBS_ItemSprites","status":true,"description":"简易的精灵物品栏插件","parameters":{"物品栏快捷键":"i","默认增益描述字色":"24","默认减益描述字色":"25","物品品质背景渐变方向":"1","物品数量偏移Y":"10","物品背景闪烁开关":"0","物品背景闪烁速度":"0.125","物品稀有度图标透明度":"128","开启武器装备耐久度":"1","无法破坏耐久度词语":"无法破坏","耐久消耗系数":"10","自由挪动物品":"0"}},
 {"name":"SSMBS_EventName","status":true,"description":"事件名称","parameters":{}},
@@ -26,5 +25,7 @@ var $plugins =
 {"name":"SSMBS_Window_Equip","status":true,"description":"装备窗口界面","parameters":{}},
 {"name":"SSMBS_Window_Inventory","status":true,"description":"物品窗口界面","parameters":{}},
 {"name":"SSMBS_Window_Skills","status":true,"description":"简单的技能窗口","parameters":{"技能快捷键":"k"}},
-{"name":"SSMBS_MemberFace","status":false,"description":"角色头像插件","parameters":{"透明度变量ID":"20","升级获得技能点":"20","基础属性加点按钮偏移X":"9","头像初始X":"12","头像初始Y":"108","头像间隔":"12","空状态图标ID":"64"}}
+{"name":"SSMBS_Window_KeysShortcut","status":true,"description":"快捷栏","parameters":{}},
+{"name":"SSMBS_MemberFace","status":false,"description":"角色头像插件","parameters":{"透明度变量ID":"20","升级获得技能点":"20","基础属性加点按钮偏移X":"9","头像初始X":"12","头像初始Y":"108","头像间隔":"12","空状态图标ID":"64"}},
+{"name":"SSMBS_ItemShortcut","status":false,"description":"物品、技能快捷栏","parameters":{"透明度变量ID":"20","快捷栏最大数量":"9","快捷栏X坐标调整":"0","快捷栏Y坐标调整":"-4","属性介绍宽度":"128","是否开启角色血槽":"1","角色血条X":"12","角色血条Y":"825"}}
 ];

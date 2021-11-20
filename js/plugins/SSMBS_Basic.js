@@ -68,7 +68,7 @@ ssmbsBasic.calcMoveAngle = function( point1, point2 ){
 
 ssmbsBasic.convertNumber = function(number,type){
     if(type == 'second'){
-        return Math.floor(number/60*10)/10;
+        return Math.round(number/60);
     }
     if(type == 'thousand'){
         var result = '', counter = 0;

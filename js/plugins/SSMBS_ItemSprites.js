@@ -1286,25 +1286,20 @@ Scene_Map.prototype.mapUseItem = function(user, userChar) {
 			};
 		};
 		if( this.itemType != 'skill' && this.isHandledItem &&
-		(!this.itemBackground || 
-		!(TouchInput.x >= this.itemBackground.x && TouchInput.x <= this.itemBackground.x + 298  &&
-		  TouchInput.y >= this.itemBackground.y && TouchInput.y <= this.itemBackground.y + 458 ))&&
 		(!this.shortcutBackArray || 
 		!(TouchInput.x >= this.shortcutBackArray[0].x && TouchInput.x <= this.shortcutBackArray[sxlSimpleShortcut.quantity-1].x+32  &&
 		  TouchInput.y >= this.shortcutBackArray[0].y && TouchInput.y <= this.shortcutBackArray[0].y+32 )) &&
 		( !(sxlSimpleShop.window.opacity >= 255 &&
 		TouchInput.x > sxlSimpleShop.window.x && TouchInput.x < sxlSimpleShop.window.x + 298 &&
 		TouchInput.y > sxlSimpleShop.window.y && TouchInput.y < sxlSimpleShop.window.y + 470)) &&
-		(!this.faces ||
-		!(TouchInput.x >= this.faces[this.faces.length-1]._bounds.minX && TouchInput.x <= this.faces[0]._bounds.maxX &&
-		TouchInput.y >= this.faces[this.faces.length-1]._bounds.minY && TouchInput.y <= this.faces[this.faces.length-1]._bounds.maxY))&&
-		(!this.upgradeWindow ||
-		!(TouchInput.x >= this.upgradeWindow.x && TouchInput.x <= this.upgradeWindow.x+298 &&
-		  TouchInput.y >= this.upgradeWindow.y && TouchInput.y <= this.upgradeWindow.y+470)) &&
+		!this.isTouchingKeysShortcut &&
+		// (!this.upgradeWindow ||
+		// !(TouchInput.x >= this.upgradeWindow.x && TouchInput.x <= this.upgradeWindow.x+298 &&
+		//   TouchInput.y >= this.upgradeWindow.y && TouchInput.y <= this.upgradeWindow.y+470)) &&
 		(!this.inventoryWindow ||
 		!(TouchInput.x >= this.inventoryWindow.x && TouchInput.x <= this.inventoryWindow.x+SSMBS_Window_Inventory.width &&
 		  TouchInput.y >= this.inventoryWindow.y && TouchInput.y <= this.inventoryWindow.y+SSMBS_Window_Inventory.height)&&
-		  (!this.equipWindow ||
+		(!this.equipWindow || !SSMBS_Window_Equip.isOpen ||
 		!(TouchInput.x >= this.equipWindow.x && TouchInput.x <= this.equipWindow.x+SSMBS_Window_Equip.width &&
 		  TouchInput.y >= this.equipWindow.y && TouchInput.y <= this.equipWindow.y+SSMBS_Window_Equip.height)))
 		){
@@ -1348,37 +1343,37 @@ Scene_Map.prototype.mapUseItem = function(user, userChar) {
 		// 	this.isHandledItem.scId.cd=0;
 		// 	this.isHandledItem = null
 		// };
-		if(sxlSimpleItemList.freeMoveItem){
-			if(this.itemBackground && this.isHandledItem &&
-			TouchInput.x >= this.itemBackground.x && TouchInput.x <= this.itemBackground.x + 298  &&
-			TouchInput.y >= this.itemBackground.y + 240 && TouchInput.y <= this.itemBackground.y + 458 
-			){
-				if( this.itemType != 'skill' &&  this.itemType != 'shop'){
-					var newPosX = Math.floor((TouchInput.x-(this.itemBackground.x))/40);
-					var newPosY = Math.floor((TouchInput.y-(this.itemBackground.y+220))/40);
-					for( item in this.itemArray ){
-						if( (!this.itemArray[item].item.positionX && 
-							this.itemArray[item].positionX == newPosX && 
-							this.itemArray[item].positionY == newPosY) || 
-							(this.itemArray[item].item.positionX && 
-							this.itemArray[item].item.positionX-1 == newPosX && 
-							this.itemArray[item].item.positionY-1 == newPosY)){
-							this.itemArray[item].item.positionX = this.isHandledItem.positionX+1;
-							this.itemArray[item].item.positionY = this.isHandledItem.positionY+1;
-						}
-					}
-					this.isHandledItem.item.positionX = newPosX+1;
-					this.isHandledItem.item.positionY = newPosY+1;
-					this.isHandledItem.item.page = sxlSimpleItemList.page+1;
-					this.isHandledItem.item.position = (Number(this.isHandledItem.item.positionY))*7+(Number(this.isHandledItem.item.positionX));
+		// if(sxlSimpleItemList.freeMoveItem){
+		// 	if(this.itemBackground && this.isHandledItem &&
+		// 	TouchInput.x >= this.itemBackground.x && TouchInput.x <= this.itemBackground.x + 298  &&
+		// 	TouchInput.y >= this.itemBackground.y + 240 && TouchInput.y <= this.itemBackground.y + 458 
+		// 	){
+		// 		if( this.itemType != 'skill' &&  this.itemType != 'shop'){
+		// 			var newPosX = Math.floor((TouchInput.x-(this.itemBackground.x))/40);
+		// 			var newPosY = Math.floor((TouchInput.y-(this.itemBackground.y+220))/40);
+		// 			for( item in this.itemArray ){
+		// 				if( (!this.itemArray[item].item.positionX && 
+		// 					this.itemArray[item].positionX == newPosX && 
+		// 					this.itemArray[item].positionY == newPosY) || 
+		// 					(this.itemArray[item].item.positionX && 
+		// 					this.itemArray[item].item.positionX-1 == newPosX && 
+		// 					this.itemArray[item].item.positionY-1 == newPosY)){
+		// 					this.itemArray[item].item.positionX = this.isHandledItem.positionX+1;
+		// 					this.itemArray[item].item.positionY = this.isHandledItem.positionY+1;
+		// 				}
+		// 			}
+		// 			this.isHandledItem.item.positionX = newPosX+1;
+		// 			this.isHandledItem.item.positionY = newPosY+1;
+		// 			this.isHandledItem.item.page = sxlSimpleItemList.page+1;
+		// 			this.isHandledItem.item.position = (Number(this.isHandledItem.item.positionY))*7+(Number(this.isHandledItem.item.positionX));
 					
 					
 
-					this.isHandledItem = null;
-					// this.createItems();
-				};
-			};
-		};
+		// 			this.isHandledItem = null;
+		// 			// this.createItems();
+		// 		};
+		// 	};
+		// };
 		
 		if( this.shortcutBackArray ){
 			for( i = 0 ; i < sxlSimpleShortcut.quantity ; i ++ ){
@@ -2072,7 +2067,6 @@ Scene_Map.prototype.showInformation = function() {
 					line ++
 				};
 				if(this.itemInform.mpCost>0){
-					
 					this.information.bitmap.textColor = ColorManager.textColor(4);
 					this.information.bitmap.drawText(infromPreffix+TextManager.mp+'消耗: '+this.itemInform.mpCost,TextStartX,TextStartY + line*informationLineHeight,TextMaxWidth,informationLineHeight,'left');
 					this.information.bitmap.textColor = ColorManager.textColor(0);

@@ -171,6 +171,7 @@ Scene_Map.prototype.update = function() {
 		this.inventoryWindow.opacity -= SSMBS_Window_Inventory.appearSpeed;
 	}
 	if(Input.isTriggered( SSMBS_Window_Inventory.hotkey )){
+		SoundManager.playCursor();
 		this.inventoryWindow.x = $gameSystem.windowInventoryX?$gameSystem.windowInventoryX:SSMBS_Window_Inventory.defaultX;
 		this.inventoryWindow.y = $gameSystem.windowInventoryY?$gameSystem.windowInventoryY:SSMBS_Window_Inventory.defaultY;
 		SSMBS_Window_Inventory.isOpen = !SSMBS_Window_Inventory.isOpen;
@@ -436,7 +437,7 @@ Scene_Map.prototype.updateInventory = function(){
 		SSMBS_Window_Inventory.xDelta = 0;
 		SSMBS_Window_Inventory.yDelta = 0;
 	}
-	if(this.drawingWindow == 'Inventory'){
+	if(TouchInput.isPressed() && !this.nowPickedItem && this.drawingWindow == 'Inventory'){
 		this.inventoryWindow.x += (TouchInput.x - this.inventoryWindow.x)-SSMBS_Window_Inventory.xDelta;
 		this.inventoryWindow.y += (TouchInput.y - this.inventoryWindow.y)-SSMBS_Window_Inventory.yDelta;
 		//防止出屏
@@ -458,6 +459,7 @@ Scene_Map.prototype.updateInventory = function(){
 		this.inventoryWindowItemIcons.y = this.inventoryWindow.y;
 		$gameSystem.windowInventoryX = this.inventoryWindow.x;
 		$gameSystem.windowInventoryY = this.inventoryWindow.y;
+		
 	}
 	for(let i = 0 ; i < SSMBS_Window_Inventory.gridsPerLine*SSMBS_Window_Inventory.gridsLines ; i ++ ){
 		//高亮鼠标所在格子

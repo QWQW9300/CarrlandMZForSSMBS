@@ -401,6 +401,7 @@ Scene_Map.prototype.refreshShortcutItem = function(){
 				this.stateIconStayTimeArray[j].bitmap.drawText(stateTime,0,0,24,24,'center');
 			}
 		}
+
 		for(i = 0 ; i < this.stateIconArray.length ; i ++ ){
 			this.stateIconArray[i].setFrame(this.stateIconArray[i].icon % 16*32,Math.floor(this.stateIconArray[i].icon / 16)*32,32,32);
 			if( $dataStates[this.stateIconArray[i].state] &&
@@ -439,7 +440,7 @@ Scene_Map.prototype.refreshShortcutItem = function(){
 			this.hintMouse.y = this.itemButton.y;
 			this.hintMouse.bitmap.drawText( ' 物品栏( '+sxlSimpleItemList.triggerButton.toUpperCase()+' )',0,0,wordWidth,24,'left' )
 			if( TouchInput.isClicked() ){
-				SSMBS_Window_Inventory.isOpen = true;
+				
 			};
 			
 		};
@@ -452,20 +453,7 @@ Scene_Map.prototype.refreshShortcutItem = function(){
 			this.hintMouse.bitmap.drawText( ' 技能栏( '+sxlSkillWindow.hotKey.toUpperCase()+' )',0,0,wordWidth,24,'left' )
 			if( TouchInput.isClicked() ){
 				SoundManager.playCursor();
-				if(this.openSkillWindow == true){
-
-					// this.skillWindowSaveX = this.skillWindow.x;
-					// this.skillWindowSaveY = this.skillWindow.y;
-					// this.skillWindow.x = 999999;
-					// this.skillWindow.y = 999999;
-					// this.openSkillWindow = false;
-				}else{
-					if(this.skillWindow){
-						this.skillWindow.x = this.skillWindowSaveX;
-						this.skillWindow.y = this.skillWindowSaveY;
-					};
-					this.openSkillWindow = true;
-				}
+				
 			};
 		};
 
@@ -598,6 +586,7 @@ Scene_Map.prototype.refreshShortcutItem = function(){
 		
 		if($gameVariables.value(sxlSimpleShortcut.opacityVarID)>0) this.shortcutBackArray[i].opacity = $gameVariables.value(sxlSimpleShortcut.opacityVarID)/2;
 		if( this.shorcutItem[i] ){
+
 			if($gameVariables.value(sxlSimpleShortcut.opacityVarID)<=0){
 				this.shorcutItem[i].opacity = $gameVariables.value(sxlSimpleShortcut.opacityVarID);
 			}
@@ -747,15 +736,13 @@ Scene_Map.prototype.keyUseShortCut = function(){
 				if($gamePlayer._waitTime<1){
 					user = $gamePlayer;
 					if( this.shorcutItem[i].item.itypeId){
-						let cd = $dataItems[this.shorcutItem[i].item.id].meta.cooldown?Number($dataItems[this.shorcutItem[i].item.id].meta.cooldown):30;
 						sxlSimpleABS.useItem(this.shorcutItem[i].item,user)
 						//挂钩快捷物品栏CD和物品栏CD
 						$dataItems[this.shorcutItem[i].item.id].nowCD = Number($dataItems[this.shorcutItem[i].item.id].meta.cooldown);
 					}
 					if( DataManager.isSkill(this.shorcutItem[i].item)){
-						let cd = $dataSkills[this.shorcutItem[i].item.id].meta.cooldown?Number($dataSkills[this.shorcutItem[i].item.id].meta.cooldown):30;
 						sxlSimpleABS.useSkill(this.shorcutItem[i].item,user);
-						this.shorcutItem[i].cd = Number($dataSkills[this.shorcutItem[i].item.id].meta.cooldown)
+						// this.shorcutItem[i].cd = Number($dataSkills[this.shorcutItem[i].item.id].meta.cooldown)
 					}
 
 
@@ -787,7 +774,7 @@ Scene_Map.prototype.keyUseShortCut = function(){
 					this.showDamage( $gamePlayer , '所持武器无法释放' , 14 ,8, 'word'  )
 				}
 			}
-			if( sxlSimpleItemList.itemShow ) this.createItems();
+			// if( sxlSimpleItemList.itemShow ) this.createItems();
 			// if( sxlSimpleItemList.itemShow ) this.createEquips();
 		};
 	};
