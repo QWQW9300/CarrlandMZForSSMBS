@@ -55,8 +55,26 @@ Scene_Map.prototype.update = function() {
 		for( let i = 0 ; i < SSMBS_Window_KeysShortcut.keysAmount ; i ++ ){
 			$gameParty.shortcutGirdItems.push(null);
 		}
+	};
+	//转换为档案数据
+	for( let i = 0 ; i < $gameParty.shortcutGirdItems.length ; i ++ ){
+		if($gameParty.shortcutGirdItems[i]){
+			if($gameParty.shortcutGirdItems[i].itypeId){
+				$gameParty.shortcutGirdItems[i] = $dataItems[$gameParty.shortcutGirdItems[i].id];
+			}
+			if($gameParty.shortcutGirdItems[i].atypeId ){
+				$gameParty.shortcutGirdItems[i] = $dataArmors[$gameParty.shortcutGirdItems[i].id];
+			}
+			if($gameParty.shortcutGirdItems[i].wtypeId){
+				$gameParty.shortcutGirdItems[i] = $dataWeapons[$gameParty.shortcutGirdItems[i].id];
+			}
+			if($gameParty.shortcutGirdItems[i].stypeId){
+				$gameParty.shortcutGirdItems[i] = $dataSkills[$gameParty.shortcutGirdItems[i].id];
+			}
+		}
 	}
 	this.refreshKeysGirds();
+	
 }
 
 Scene_Map.prototype.createKeysGirds = function(){
@@ -130,6 +148,19 @@ Scene_Map.prototype.refreshKeysGirds = function(){
 				SSMBS_Window_KeysShortcut.gridSize,
 				SSMBS_Window_KeysShortcut.gridSize //最终大小
 			)
+			//右键图标
+			if(i == $gamePlayer.rightClickShortCut){
+				this.keysIcons.bitmap.blt(
+					ImageManager.loadSystem('mouseRight'),
+					0,0, //切割坐标
+					SSMBS_Window_KeysShortcut.gridSize,	SSMBS_Window_KeysShortcut.gridSize,//切割尺寸
+					SSMBS_Window_KeysShortcut.positions[i].x, 
+					SSMBS_Window_KeysShortcut.positions[i].y,// 绘制坐标
+					SSMBS_Window_KeysShortcut.gridSize,
+					SSMBS_Window_KeysShortcut.gridSize //最终大小
+				)
+			}
+			
 			//耐久
 			if( sxlSimpleItemList.durabilityAllowed && item.etypeId && !item.meta.unbreakable ){
 				let type = item.wtypeId?$gameParty.durabilityWeapons:$gameParty.durabilityArmors;
@@ -166,6 +197,23 @@ Scene_Map.prototype.refreshKeysGirds = function(){
 				'center'
 				)
 				this.keysIconsTexts.bitmap.textColor = ColorManager.textColor(0);
+				if( $gamePlayer.battler().mp<mpCost && $gameParty.triggerKeysCooldown[i]<=0 ){
+					this.keysIconsOvarlayer.bitmap.fillRect( i*(SSMBS_Window_KeysShortcut.gridSize + SSMBS_Window_KeysShortcut.keySpace), SSMBS_Window_KeysShortcut.gridSize, SSMBS_Window_KeysShortcut.gridSize, -SSMBS_Window_KeysShortcut.gridSize, ColorManager.textColor(7));
+				}
+			}
+			//数量
+			if(item.itypeId>0){
+				let amount =  $gameParty.numItems(item);
+				this.keysIconsTexts.bitmap.textColor = ColorManager.textColor(0);
+				this.keysIconsTexts.bitmap.drawText(
+				'x'+amount,
+				i*(SSMBS_Window_KeysShortcut.gridSize + SSMBS_Window_KeysShortcut.keySpace), 
+				(SSMBS_Window_KeysShortcut.gridSize - SSMBS_Window_KeysShortcut.defaultFontSize),
+				32,
+				SSMBS_Window_KeysShortcut.defaultFontSize,
+				'right'
+				)
+				this.keysIconsTexts.bitmap.textColor = ColorManager.textColor(0);
 			}
 			//冷却
 			if($gameParty.triggerKeysCooldown[i]>0){
@@ -196,7 +244,7 @@ Scene_Map.prototype.refreshKeysGirds = function(){
 		let edX = stX + SSMBS_Window_KeysShortcut.gridSize;
 		let edY = stY + SSMBS_Window_KeysShortcut.gridSize;
 		//使用快捷栏
-		if(Input.isTriggered($gameParty.triggerKeys[i]) && $gameParty.shortcutGirdItems[i]){
+		if(Input.isTriggered($gameParty.triggerKeys[i]) && $gameParty.shortcutGirdItems[i]&&$gameParty.triggerKeysCooldown[i]<=0){
 			$gameParty.lastUsedKeyShortcut = i;
 			if( $gameParty.shortcutGirdItems[i].stypeId ){
 				let mpCost =  $gameParty.shortcutGirdItems[i].mpCost*$gamePlayer.battler().mcr;
@@ -204,17 +252,26 @@ Scene_Map.prototype.refreshKeysGirds = function(){
 					mpCost-=Number($gameParty.shortcutGirdItems[i].meta.slvEffectMpCost);
 				}
 				mpCost=mpCost.clamp(0,Infinity);
-				if($gamePlayer.battler()._mp>=mpCost&&$gameParty.triggerKeysCooldown[i]<=0){
+				if($gamePlayer.battler()._mp>=mpCost){
 					sxlSimpleABS.useSkill($gameParty.shortcutGirdItems[i],$gamePlayer);
 				};
 			}
 			if( $gameParty.shortcutGirdItems[i].itypeId || $gameParty.shortcutGirdItems[i].etypeId ){
 				let store;
-				if( $gameParty.shortcutGirdItems[i].etypeId ){
+				if( $gameParty.shortcutGirdItems[i].etypeId && $gamePlayer.battler().canEquip($gameParty.shortcutGirdItems[i]) ){
 					store = $gamePlayer.battler().equips()[$gameParty.shortcutGirdItems[i].etypeId - 1] ;
 				}
 				sxlSimpleABS.useItem($gameParty.shortcutGirdItems[i],$gamePlayer);
-				$gameParty.shortcutGirdItems[i] = store;
+				if(store){
+					if(store.meta.hide){
+						$gameParty.shortcutGirdItems[i] = null;
+					}else{
+						$gameParty.shortcutGirdItems[i] = store;
+					}
+					
+					store = null;
+				}
+				
 			}
 		}
 		//触摸格子
@@ -234,23 +291,41 @@ Scene_Map.prototype.refreshKeysGirds = function(){
 				this.item = this.nowPickedItem;
 				this.itemType = 'shortCut';
 			}
+			if(TouchInput.isCancelled()  && !this.nowPickedItem && !this.isDrawing ){
+				$gamePlayer.rightClickShortCut = i;
+			}
 			if( this.touchIcon.item && TouchInput.isReleased() ){
 				SoundManager.playEquip();
+				//替换
 				for( let j = 0 ; j < SSMBS_Window_KeysShortcut.keysAmount ; j ++ ){
+					SSMBS_Window_KeysShortcut.changeAllowed = true;
 					if($gameParty.shortcutGirdItems[j]==this.touchIcon.item){
-						$gameParty.shortcutGirdItems[j] = null;
-					}
+						if( $gameParty.triggerKeysCooldown[j] <=0 && 
+							$gameParty.triggerKeysCooldown[i]<=0){
+							$gameParty.shortcutGirdItems[j] = null;
+							SSMBS_Window_KeysShortcut.changeAllowed = true;
+							break;
+						}else{
+							SSMBS_Window_KeysShortcut.changeAllowed = false;
+						}
+						
+					};
 				};
-				$gameParty.shortcutGirdItems[i] = this.touchIcon.item;
+				if(SSMBS_Window_KeysShortcut.changeAllowed&&$gameParty.triggerKeysCooldown[i]<=0){
+					$gameParty.shortcutGirdItems[i] = this.touchIcon.item;
+				}
+				
 			}
+
 		}
 	}
+	
 	//清空单个快捷键
-	if( this.isDrawing&&this.nowPickedItem&&
-		!ssmbsBasic.isTouching( this.keysGeneral.x-12,
-								this.keysGeneral.y-12,
-								this.keysGeneral.x+SSMBS_Window_KeysShortcut.width+12,
-								this.keysGeneral.y+SSMBS_Window_KeysShortcut.height)+12)
+	if( this.isDrawing&&this.nowPickedItem&&this.itemType == 'shortCut'&&
+		!ssmbsBasic.isTouching( this.keysGeneral.x-24,
+								this.keysGeneral.y-24,
+								this.keysGeneral.x+SSMBS_Window_KeysShortcut.width+24,
+								this.keysGeneral.y+SSMBS_Window_KeysShortcut.height+24))
 	{
 		for( let j = 0 ; j < SSMBS_Window_KeysShortcut.keysAmount ; j ++ ){
 			this.isDrawing = false;

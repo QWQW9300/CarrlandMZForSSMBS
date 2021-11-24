@@ -25,6 +25,7 @@ var $plugins =
 {"name":"SSMBS_Window_Equip","status":true,"description":"装备窗口界面","parameters":{}},
 {"name":"SSMBS_Window_Inventory","status":true,"description":"物品窗口界面","parameters":{}},
 {"name":"SSMBS_Window_Skills","status":true,"description":"简单的技能窗口","parameters":{"技能快捷键":"k"}},
+{"name":"SSMBS_Window_Notification","status":true,"description":"消息推送","parameters":{}},
 {"name":"SSMBS_Window_KeysShortcut","status":true,"description":"快捷栏","parameters":{}},
 {"name":"SSMBS_MemberFace","status":false,"description":"角色头像插件","parameters":{"透明度变量ID":"20","升级获得技能点":"20","基础属性加点按钮偏移X":"9","头像初始X":"12","头像初始Y":"108","头像间隔":"12","空状态图标ID":"64"}},
 {"name":"SSMBS_ItemShortcut","status":false,"description":"物品、技能快捷栏","parameters":{"透明度变量ID":"20","快捷栏最大数量":"9","快捷栏X坐标调整":"0","快捷栏Y坐标调整":"-4","属性介绍宽度":"128","是否开启角色血槽":"1","角色血条X":"12","角色血条Y":"825"}}

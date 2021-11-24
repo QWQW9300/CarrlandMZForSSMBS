@@ -31,7 +31,6 @@ sxlSimpleABS.useSkill = function(skill,user,target,forced){
 				$gameParty.triggerKeysCooldown[s] = cd;
 			}
 		}
-		
 	}
 	let animation = skill.animationId
 	user.skillCast = 0;
@@ -99,7 +98,6 @@ sxlSimpleABS.useSkill = function(skill,user,target,forced){
 					pSkill = $dataSkills[Number(stepParam)];
 				}
 				user.sequence.push({skillId: skill.id ,stepName:stepName,stepParam: pSkill,stepParam2:stepParam2,stepParam3:Number(stepParam3),target:target});
-
 			}
 			//状态增加
 			if(stepName=='addState'){

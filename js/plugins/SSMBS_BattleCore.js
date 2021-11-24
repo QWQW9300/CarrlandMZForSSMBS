@@ -196,11 +196,6 @@
  * @desc 暴击触发公共事件ID
  * @default 3
  * 
- * @param 敏捷吟唱阈值
- * @type number
- * @desc 敏捷对于吟唱速度的影响阈值，角色敏捷小于这个值则会有吟唱时间惩罚
- * @default 100
- *
  * @param 弹道速度阈值
  * @type number
  * @desc 弹道速度的阈值
@@ -250,21 +245,6 @@
  * @type number
  * @desc 禁止耐力恢复状态ID
  * @default 29
- * 
- * @param 即时信息栏x
- * @type number
- * @desc 即时信息栏x
- * @default 0
- *
- * @param 即时信息栏y
- * @type number
- * @desc 即时信息栏y
- * @default 0
- *
- * @param 即时信息栏清空按钮对齐
- * @type number
- * @desc 即时信息栏清空按钮对齐
- * @default right
  *
  *
  */
@@ -601,21 +581,21 @@ Scene_Map.prototype.requestWaitShowDamge = function(){
 };
 
 Scene_Map.prototype.clearInformation = function(){
-	if( this.screenInformation.buttonClear.x &&
-		TouchInput.x > this.screenInformation.buttonClear.x &&
-		TouchInput.x < this.screenInformation.buttonClear.x + 48 &&
-		TouchInput.y > this.screenInformation.buttonClear.y - 12 &&
-		TouchInput.y < this.screenInformation.buttonClear.y + 32){
-		$gameParty.members()[0]._tp=0;
-		this.isOnInformWindow = true;
-	}else{
-		this.isOnInformWindow = false;
-	}
+	// if( this.screenInformation.buttonClear.x &&
+	// 	TouchInput.x > this.screenInformation.buttonClear.x &&
+	// 	TouchInput.x < this.screenInformation.buttonClear.x + 48 &&
+	// 	TouchInput.y > this.screenInformation.buttonClear.y - 12 &&
+	// 	TouchInput.y < this.screenInformation.buttonClear.y + 32){
+	// 	$gameParty.members()[0]._tp=0;
+	// 	this.isOnInformWindow = true;
+	// }else{
+	// 	this.isOnInformWindow = false;
+	// }
 };
 
 //更新可活动状态 窗口
 Scene_Map.prototype.isMoveable = function(){
-	if(  (this.itemBackground &&
+	if(  /* (this.itemBackground &&
 		  TouchInput.x > this.itemBackground.x && 
 		  TouchInput.x < this.itemBackground.x + this.itemBackground.width &&
 		  TouchInput.y > this.itemBackground.y &&
@@ -649,7 +629,7 @@ Scene_Map.prototype.isMoveable = function(){
   		  TouchInput.x > sxlSimpleShop.window.x && 
   		  TouchInput.x < sxlSimpleShop.window.x + 298 &&
   		  TouchInput.y > sxlSimpleShop.window.y &&
-  		  TouchInput.y < sxlSimpleShop.window.y + 48))||
+  		  TouchInput.y < sxlSimpleShop.window.y + 48))|| */
 		  sxlSimpleABS.ABS_OFF==true ||
 		  this.touchAttackabkeEnemy == true ||
 		  this.isHandledItem){
@@ -1757,7 +1737,7 @@ Scene_Map.prototype.updateAggro = function(){
 };
 
 Scene_Map.prototype.updateDamageWord = function(){
-	if(this.damageWord){
+	if(sxlSimpleABS.damageWord){
 		for(let i = 0; i < sxlSimpleABS.damages.length; i++){
 			if(sxlSimpleABS.damages.length>sxlSimpleABS.maxDamageAmount){
 				sxlSimpleABS.damages[0].bitmap.clear();
@@ -2054,22 +2034,26 @@ Scene_Map.prototype.commonAttack = function(){
 		
 	};
 	if( TouchInput.isCancelled() 
-		&& $gamePlayer.rightClickSkillSCId
-		&& this.shorcutItem[Number($gamePlayer.rightClickSkillSCId)].cd<=0
+		&& ($gamePlayer.rightClickShortCut || $gamePlayer.rightClickShortCut==0)
 		&& !this.itemInform
-		&& this.isMoveable) {
+		// && this.isMoveable
+		&& $gameParty.shortcutGirdItems[$gamePlayer.rightClickShortCut]
+		&& $gameParty.triggerKeysCooldown[$gamePlayer.rightClickShortCut]<=0) {
 		this.fixDirection($gamePlayer)
-		let scId = Number($gamePlayer.rightClickSkillSCId)+1;
-		if( $gameVariables.value(scId).stypeId){
-			let skill = ($gameVariables.value(scId));
+		let scId = $gamePlayer.rightClickShortCut;
+		if( $gameParty.shortcutGirdItems[scId].stypeId ){
+			let skill = ($gameParty.shortcutGirdItems[scId]);
 			if(!$gamePlayer.sequence.length > 0 || skill.meta.forced){
 				if(this.skillUsable($gamePlayer,skill)){
 					sxlSimpleABS.useSkill(skill,$gamePlayer)
 				}
 			}
-		}else{
-			let item = ($gameVariables.value(scId));
+		}
+		if($gameParty.shortcutGirdItems[scId].itypeId || $gameParty.shortcutGirdItems[scId].etypeId){
+			let item = ($gameParty.shortcutGirdItems[scId]);
+            console.log('~ item', item);
 			sxlSimpleABS.useItem(item,$gamePlayer)
+			
 		}
 	}
 };
@@ -2809,66 +2793,66 @@ Scene_Map.prototype.enemyAttackAffect = function(user, target, skill){
 
 
 Scene_Map.prototype.showDamage = function(target, damage, isCritical, isEvaded, isMissed, isDarin, skill, item, result, color){
-	this.damageWord = new Sprite(new Bitmap(128,128));
-	this.damageWord.target = target;
-	this.damageWord.x = target.screenX();
-	this.damageWord.y = target.screenY()-48;
-	this.damageWord.anchor.x = 0.5;
-	this.damageWord.anchor.y = 0.5;
-	this.damageWord.scale.x = 5;
-	this.damageWord.scale.y = 5;
-	this.damageWord.opacity = 0;
-	this.damageWord.bitmap.fontFace = $gameSystem.mainFontFace();
-	this.damageWord.bitmap.fontSize = 16;
-	this.damageWord.bitmap.smooth = false;
+	sxlSimpleABS.damageWord = new Sprite(new Bitmap(128,128));
+	sxlSimpleABS.damageWord.target = target;
+	sxlSimpleABS.damageWord.x = target.screenX();
+	sxlSimpleABS.damageWord.y = target.screenY()-48;
+	sxlSimpleABS.damageWord.anchor.x = 0.5;
+	sxlSimpleABS.damageWord.anchor.y = 0.5;
+	sxlSimpleABS.damageWord.scale.x = 5;
+	sxlSimpleABS.damageWord.scale.y = 5;
+	sxlSimpleABS.damageWord.opacity = 0;
+	sxlSimpleABS.damageWord.bitmap.fontFace = $gameSystem.mainFontFace();
+	sxlSimpleABS.damageWord.bitmap.fontSize = 16;
+	sxlSimpleABS.damageWord.bitmap.smooth = false;
 	if(!color){
 		color = 0;
 	}
-	this.damageWord.bitmap.textColor = ColorManager.textColor(color);
+	sxlSimpleABS.damageWord.bitmap.textColor = ColorManager.textColor(color);
 	if(isMissed && isMissed == 'word'){
-		this.damageWord.bitmap.fontSize = isCritical;
-		this.damageWord.bitmap.textColor = ColorManager.textColor(isEvaded);
-		this.damageWord.bitmap.drawText(damage,0,0,128,128,'center');
+		sxlSimpleABS.damageWord.bitmap.fontSize = isCritical;
+		sxlSimpleABS.damageWord.bitmap.textColor = ColorManager.textColor(isEvaded);
+		sxlSimpleABS.damageWord.bitmap.drawText(damage,0,0,128,128,'center');
 		
 	}else{
 		if(item){
-			this.damageWord.item = true;
+			sxlSimpleABS.damageWord.item = true;
 			if(item == 'gold'){
-				this.damageWord.bitmap.fontSize = 14;
+				sxlSimpleABS.damageWord.bitmap.fontSize = 14;
 				var textColor = ColorManager.textColor(14);
-				this.damageWord.bitmap.textColor = textColor;
-				this.damageWord.bitmap.drawText('获得金币×'+sxlSimpleABS.requestShowItemGold,0,0,128,128,'center');
+				sxlSimpleABS.damageWord.bitmap.textColor = textColor;
+				sxlSimpleABS.damageWord.bitmap.drawText('获得金币×'+sxlSimpleABS.requestShowItemGold,0,0,128,128,'center');
 			}else{
-				this.damageWord.bitmap.fontSize = 14;
+				sxlSimpleABS.damageWord.bitmap.fontSize = 14;
 				var textColor = item.meta.textColor?
 								ColorManager.textColor(Number(item.meta.textColor)):
 								'#ffffff';
-				this.damageWord.bitmap.textColor = textColor;
-				this.damageWord.bitmap.drawText('获得:'+item.name,0,0,128,128,'center');
+				sxlSimpleABS.damageWord.bitmap.textColor = textColor;
+				sxlSimpleABS.damageWord.bitmap.drawText('获得:'+item.name,0,0,128,128,'center');
 			}
 			
 		}else{
-			this.damageWord.randomDelta = Math.random();
+			sxlSimpleABS.damageWord.randomDelta = Math.random();
 			if(isEvaded||false){
-				this.damageWord.bitmap.drawText('Evaded',0,0,128,128,'center');
+				sxlSimpleABS.damageWord.bitmap.drawText('Evaded',0,0,128,128,'center');
 			}else if(isMissed||false){
-				this.damageWord.bitmap.drawText('Miss',0,0,128,128,'center');
+				sxlSimpleABS.damageWord.bitmap.drawText('Miss',0,0,128,128,'center');
 			}else if(damage != 0){
-				this.damageWord.bitmap.drawText(Math.abs(damage),0,0,128,128,'center');
+				sxlSimpleABS.damageWord.bitmap.drawText(Math.abs(damage),0,0,128,128,'center');
 			};
 			if(isCritical){
-				this.damageWord.bitmap.fontSize = 24;
-				this.damageWord.bitmap.fontItalic = true;
-				this.damageWord.bitmap.textColor = 'red';
-				this.damageWord.bitmap.drawText('Critical!',0,-12,128,128,'center');
+				sxlSimpleABS.damageWord.bitmap.fontSize = 24;
+				sxlSimpleABS.damageWord.bitmap.fontItalic = true;
+				sxlSimpleABS.damageWord.bitmap.textColor = 'red';
+				sxlSimpleABS.damageWord.bitmap.drawText('Critical!',0,-12,128,128,'center');
 			};
 		}
 	} 
 	
 
 	
-	this.addChild(this.damageWord);
-	sxlSimpleABS.damages.push(this.damageWord);
+	this.addChild(sxlSimpleABS.damageWord);
+	sxlSimpleABS.damages.push(sxlSimpleABS.damageWord);
 	sxlSimpleABS.damagesTarget.push(target);
 };
 
@@ -3357,144 +3341,144 @@ Scene_Map.prototype.showInformation = function(){
 
 Scene_Map.prototype.updateInformation = function(){
 	
-	for( i = 0 ; i < sxlSimpleABS.informationLines.length ; i ++){
-		sxlSimpleABS.informationLines[i].opacity -= 1 ;
-		sxlSimpleABS.informationLines[i]._stayTime -- ;
-		if(sxlSimpleABS.informationLines[i].opacity <= 0 ||
-			sxlSimpleABS.informationLines[i]._stayTime <= 0){
-			sxlSimpleABS.informationLines[i].bitmap.clear();
-			sxlSimpleABS.informationLines.splice( i, 1 );
-			sxlSimpleABS.information.splice( i, 1 );
-			this.line --;
-		}
-	}
+	// for( i = 0 ; i < sxlSimpleABS.informationLines.length ; i ++){
+	// 	sxlSimpleABS.informationLines[i].opacity -= 1 ;
+	// 	sxlSimpleABS.informationLines[i]._stayTime -- ;
+	// 	if(sxlSimpleABS.informationLines[i].opacity <= 0 ||
+	// 		sxlSimpleABS.informationLines[i]._stayTime <= 0){
+	// 		sxlSimpleABS.informationLines[i].bitmap.clear();
+	// 		sxlSimpleABS.informationLines.splice( i, 1 );
+	// 		sxlSimpleABS.information.splice( i, 1 );
+	// 		this.line --;
+	// 	}
+	// }
 
 };
 
 Scene_Map.prototype.refreshInformation = function(){
-	var padding = 12;
-	var fontSize = 16;
-	this.lineMaxHeight = 128;
-	this.line ++ ;
-	if(!this.screenInformation){
-		this.screenInformation = new Sprite(new Bitmap(Graphics.width, 302));
-		this.screenInformation.bitmap.smooth = false;
-		this.addChild(this.screenInformation);
-		this.screenInformation.bckGrd = new Sprite(new Bitmap(Graphics.width, 302));
-		this.screenInformation.bckGrd.bitmap.smooth = false;
-		this.screenInformation.bckGrd.opacity = 0;
-		this.screenInformation.bckGrd.blendMode = 2;
-		this.addChildAt(this.screenInformation.bckGrd,1);
-		this.screenInformation.scroll = new Sprite(new Bitmap(10, 20));
-		this.screenInformation.scroll.bitmap.smooth = false;
-		this.screenInformation.scroll.opacity = 0;
-		this.addChild(this.screenInformation.scroll);
-		this.screenInformation.buttonClear = new Sprite(new Bitmap(400, 100));
-		this.screenInformation.buttonClear.bitmap.smooth = false;
-		this.screenInformation.buttonClear.opacity = 0;
-		this.addChild(this.screenInformation.buttonClear);
-	};
-	if(this.screenInformation.bckGrd){
-		this.screenInformation.bckGrd.bitmap.clear();
-		this.screenInformation.bckGrd.x = padding;
-		this.screenInformation.bckGrd.y = this.screenInformation.y-7;
-		if(sxlSimpleABS.informationClearAlign=='left'){
-			this.screenInformation.bckGrd.bitmap.gradientFillRect(sxlSimpleABS.informationWindowX-24,0,400,this.screenInformation.height/2+7,'#000000','#ffffff',false);
-		}else{
-			this.screenInformation.bckGrd.bitmap.gradientFillRect(sxlSimpleABS.informationWindowX-24,0,400,this.screenInformation.height/2+7,'#000000','#000000',false);
-		}
+	// var padding = 12;
+	// var fontSize = 16;
+	// this.lineMaxHeight = 128;
+	// this.line ++ ;
+	// if(!this.screenInformation){
+	// 	this.screenInformation = new Sprite(new Bitmap(Graphics.width, 302));
+	// 	this.screenInformation.bitmap.smooth = false;
+	// 	this.addChild(this.screenInformation);
+	// 	this.screenInformation.bckGrd = new Sprite(new Bitmap(Graphics.width, 302));
+	// 	this.screenInformation.bckGrd.bitmap.smooth = false;
+	// 	this.screenInformation.bckGrd.opacity = 0;
+	// 	this.screenInformation.bckGrd.blendMode = 2;
+	// 	this.addChildAt(this.screenInformation.bckGrd,1);
+	// 	this.screenInformation.scroll = new Sprite(new Bitmap(10, 20));
+	// 	this.screenInformation.scroll.bitmap.smooth = false;
+	// 	this.screenInformation.scroll.opacity = 0;
+	// 	this.addChild(this.screenInformation.scroll);
+	// 	this.screenInformation.buttonClear = new Sprite(new Bitmap(400, 100));
+	// 	this.screenInformation.buttonClear.bitmap.smooth = false;
+	// 	this.screenInformation.buttonClear.opacity = 0;
+	// 	this.addChild(this.screenInformation.buttonClear);
+	// };
+	// if(this.screenInformation.bckGrd){
+	// 	this.screenInformation.bckGrd.bitmap.clear();
+	// 	this.screenInformation.bckGrd.x = padding;
+	// 	this.screenInformation.bckGrd.y = this.screenInformation.y-7;
+	// 	if(sxlSimpleABS.informationClearAlign=='left'){
+	// 		this.screenInformation.bckGrd.bitmap.gradientFillRect(sxlSimpleABS.informationWindowX-24,0,400,this.screenInformation.height/2+7,'#000000','#ffffff',false);
+	// 	}else{
+	// 		this.screenInformation.bckGrd.bitmap.gradientFillRect(sxlSimpleABS.informationWindowX-24,0,400,this.screenInformation.height/2+7,'#000000','#000000',false);
+	// 	}
 		
-	}
-	if( this.screenInformation.scroll){
-		this.screenInformation.scroll.bitmap.clear();
-		this.screenInformation.scroll.x = this.screenInformation.bckGrd.x;
-		this.screenInformation.scroll.anchor.y = 0.5;
-		this.screenInformation.scroll.bitmap.fillRect(6,0,2,20,'#ffffff');
-	}
-	if(this.screenInformation.buttonClear){
-		this.screenInformation.buttonClear.bitmap.clear();
-		this.screenInformation.buttonClear.x = this.screenInformation.bckGrd.x;
-		this.screenInformation.buttonClear.y = this.screenInformation.bckGrd.y-16;
-		this.screenInformation.buttonClear.anchor.y = 0.5;
-		this.screenInformation.buttonClear.blendMode = 2;
-		this.screenInformation.buttonClear.bitmap.gradientFillRect(sxlSimpleABS.informationWindowX,34,400,32,'#000000','#ffffff',false);
-		this.screenInformation.buttonClear.bitmap.drawText('  清空',sxlSimpleABS.informationWindowX,0,400,100,sxlSimpleABS.informationClearAlign);
-	}
+	// }
+	// if( this.screenInformation.scroll){
+	// 	this.screenInformation.scroll.bitmap.clear();
+	// 	this.screenInformation.scroll.x = this.screenInformation.bckGrd.x;
+	// 	this.screenInformation.scroll.anchor.y = 0.5;
+	// 	this.screenInformation.scroll.bitmap.fillRect(6,0,2,20,'#ffffff');
+	// }
+	// if(this.screenInformation.buttonClear){
+	// 	this.screenInformation.buttonClear.bitmap.clear();
+	// 	this.screenInformation.buttonClear.x = this.screenInformation.bckGrd.x;
+	// 	this.screenInformation.buttonClear.y = this.screenInformation.bckGrd.y-16;
+	// 	this.screenInformation.buttonClear.anchor.y = 0.5;
+	// 	this.screenInformation.buttonClear.blendMode = 2;
+	// 	this.screenInformation.buttonClear.bitmap.gradientFillRect(sxlSimpleABS.informationWindowX,34,400,32,'#000000','#ffffff',false);
+	// 	this.screenInformation.buttonClear.bitmap.drawText('  清空',sxlSimpleABS.informationWindowX,0,400,100,sxlSimpleABS.informationClearAlign);
+	// }
 
 
-	this.screenInformation.opacity = $gameVariables.value(sxlSimpleABS.opacityVarID);
-	this.screenInformation.bitmap.clear();
-	this.screenInformation.bitmap.fontFace = $gameSystem.mainFontFace();
-	this.screenInformation.bitmap.fontSize = fontSize;
-	this.screenInformation.x = sxlSimpleABS.informationWindowX;
-	this.screenInformation.anchor.x = 0;
-	this.screenInformation.anchor.y = 0;
-	var lineHeight = this.screenInformation.bitmap.fontSize + 2 ;
-	this.screenInformation.y = sxlSimpleABS.informationWindowY;//Graphics.height - this.screenInformation.height/2 - padding ;
-	for(i = 0 ; i < sxlSimpleABS.information.length ; i ++ ){
-		var length = sxlSimpleABS.information.length;
-		if(sxlSimpleABS.information[i-sxlSimpleABS.informPage]){
-			this.screenInformation.bitmap.textColor = sxlSimpleABS.informationColor[i-sxlSimpleABS.informPage];
-			this.screenInformation.bitmap.drawText(sxlSimpleABS.information[i-sxlSimpleABS.informPage],0, - (length - i) * lineHeight ,420, this.screenInformation.height,'left');
+	// this.screenInformation.opacity = $gameVariables.value(sxlSimpleABS.opacityVarID);
+	// this.screenInformation.bitmap.clear();
+	// this.screenInformation.bitmap.fontFace = $gameSystem.mainFontFace();
+	// this.screenInformation.bitmap.fontSize = fontSize;
+	// this.screenInformation.x = sxlSimpleABS.informationWindowX;
+	// this.screenInformation.anchor.x = 0;
+	// this.screenInformation.anchor.y = 0;
+	// var lineHeight = this.screenInformation.bitmap.fontSize + 2 ;
+	// this.screenInformation.y = sxlSimpleABS.informationWindowY;//Graphics.height - this.screenInformation.height/2 - padding ;
+	// for(i = 0 ; i < sxlSimpleABS.information.length ; i ++ ){
+	// 	var length = sxlSimpleABS.information.length;
+	// 	if(sxlSimpleABS.information[i-sxlSimpleABS.informPage]){
+	// 		this.screenInformation.bitmap.textColor = sxlSimpleABS.informationColor[i-sxlSimpleABS.informPage];
+	// 		this.screenInformation.bitmap.drawText(sxlSimpleABS.information[i-sxlSimpleABS.informPage],0, - (length - i) * lineHeight ,420, this.screenInformation.height,'left');
 			
-		}
-		this.screenInformation.bitmap.textColor = '#ffffff';
-	};	
+	// 	}
+	// 	this.screenInformation.bitmap.textColor = '#ffffff';
+	// };	
 };
 
 Scene_Map.prototype.updateScreenInformation = function(){;
-	if( this.screenInformation &&
-		TouchInput.x > this.screenInformation.x &&
-		TouchInput.x < this.screenInformation.x + 400 &&
-		TouchInput.y > this.screenInformation.y - 32 &&
-		TouchInput.y < this.screenInformation.y + this.screenInformation.height){
+	// if( this.screenInformation &&
+	// 	TouchInput.x > this.screenInformation.x &&
+	// 	TouchInput.x < this.screenInformation.x + 400 &&
+	// 	TouchInput.y > this.screenInformation.y - 32 &&
+	// 	TouchInput.y < this.screenInformation.y + this.screenInformation.height){
 		
-		this.screenInformation.opacity += 10;
-		if(this.screenInformation.bckGrd && this.screenInformation.bckGrd.opacity <= 128 ){
-			this.screenInformation.bckGrd.opacity += 5;
-			this.screenInformation.bckGrd.y = this.screenInformation.y-7;
-			this.screenInformation.scroll.opacity += 5;
-			this.screenInformation.buttonClear.x = this.screenInformation.bckGrd.x;
-			this.screenInformation.buttonClear.y = this.screenInformation.bckGrd.y-24;
-			this.screenInformation.buttonClear.opacity = this.screenInformation.bckGrd.opacity;
-		}
-		if(TouchInput.wheelY > 0 ){
-			sxlSimpleABS.informPage -= 1;
-			this.refreshInformation();
-		}
-		if(TouchInput.wheelY < 0 ){
-			sxlSimpleABS.informPage += 1;
-			this.refreshInformation();
-		}
+	// 	this.screenInformation.opacity += 10;
+	// 	if(this.screenInformation.bckGrd && this.screenInformation.bckGrd.opacity <= 128 ){
+	// 		this.screenInformation.bckGrd.opacity += 5;
+	// 		this.screenInformation.bckGrd.y = this.screenInformation.y-7;
+	// 		this.screenInformation.scroll.opacity += 5;
+	// 		this.screenInformation.buttonClear.x = this.screenInformation.bckGrd.x;
+	// 		this.screenInformation.buttonClear.y = this.screenInformation.bckGrd.y-24;
+	// 		this.screenInformation.buttonClear.opacity = this.screenInformation.bckGrd.opacity;
+	// 	}
+	// 	if(TouchInput.wheelY > 0 ){
+	// 		sxlSimpleABS.informPage -= 1;
+	// 		this.refreshInformation();
+	// 	}
+	// 	if(TouchInput.wheelY < 0 ){
+	// 		sxlSimpleABS.informPage += 1;
+	// 		this.refreshInformation();
+	// 	}
 		
-		if(this.isOnInformWindow ==true&&TouchInput.isClicked()){
-			sxlSimpleABS.information = [];
-			sxlSimpleABS.informationLines = [];
-			sxlSimpleABS.informationColor = [];
-		};
-	};
-	if( this.screenInformation && 
-		!(TouchInput.x > this.screenInformation.x &&
-		  TouchInput.x < this.screenInformation.x + 400 &&
-		  TouchInput.y > this.screenInformation.y - 32 &&
-		  TouchInput.y < this.screenInformation.y + this.screenInformation.height)){
-		this.screenInformation.opacity -- ;
-		if(this.screenInformation.bckGrd ){
-			this.screenInformation.bckGrd.opacity -=8;
-			this.screenInformation.scroll.opacity -=8;
-			this.screenInformation.buttonClear.opacity = this.screenInformation.bckGrd.opacity;
-		};
-	};
-	if(sxlSimpleABS.informPage<=0){
-		sxlSimpleABS.informPage = 0;
-	};
-	if(sxlSimpleABS.informPage >= sxlSimpleABS.information.length){
-		sxlSimpleABS.informPage =  sxlSimpleABS.information.length;
-	};
-	if( this.screenInformation && this.screenInformation.scroll){
-		this.screenInformation.scroll.y = ((this.screenInformation.bckGrd.y + this.screenInformation.bckGrd.height/2)  -
-										  (this.screenInformation.bckGrd.height/2*sxlSimpleABS.informPage/sxlSimpleABS.information.length)*0.8)-14;
-	};
+	// 	if(this.isOnInformWindow ==true&&TouchInput.isClicked()){
+	// 		sxlSimpleABS.information = [];
+	// 		sxlSimpleABS.informationLines = [];
+	// 		sxlSimpleABS.informationColor = [];
+	// 	};
+	// };
+	// if( this.screenInformation && 
+	// 	!(TouchInput.x > this.screenInformation.x &&
+	// 	  TouchInput.x < this.screenInformation.x + 400 &&
+	// 	  TouchInput.y > this.screenInformation.y - 32 &&
+	// 	  TouchInput.y < this.screenInformation.y + this.screenInformation.height)){
+	// 	this.screenInformation.opacity -- ;
+	// 	if(this.screenInformation.bckGrd ){
+	// 		this.screenInformation.bckGrd.opacity -=8;
+	// 		this.screenInformation.scroll.opacity -=8;
+	// 		this.screenInformation.buttonClear.opacity = this.screenInformation.bckGrd.opacity;
+	// 	};
+	// };
+	// if(sxlSimpleABS.informPage<=0){
+	// 	sxlSimpleABS.informPage = 0;
+	// };
+	// if(sxlSimpleABS.informPage >= sxlSimpleABS.information.length){
+	// 	sxlSimpleABS.informPage =  sxlSimpleABS.information.length;
+	// };
+	// if( this.screenInformation && this.screenInformation.scroll){
+	// 	this.screenInformation.scroll.y = ((this.screenInformation.bckGrd.y + this.screenInformation.bckGrd.height/2)  -
+	// 									  (this.screenInformation.bckGrd.height/2*sxlSimpleABS.informPage/sxlSimpleABS.information.length)*0.8)-14;
+	// };
 };
 
 
@@ -3769,22 +3753,22 @@ Game_Party.prototype.gainItem = function(item, amount, includeEquip) {
     if( SSMBS_Window_Inventory.firstEmptyGrid<=($gameParty.inventorySize*SSMBS_Window_Inventory.gridsPerLine-1)||amount<0 ){
         const container = this.itemContainer(item);
         if (container) {
-            
             const lastNumber = this.numItems(item);
             const newNumber = lastNumber + amount;
-            if(amount>0){
-                var information = '获得物品: 【 '+ item.name + ' 】 ' + '×'+amount;
-            }else{
-                var information = '失去物品: 【 '+ item.name + ' 】 ' + '×'+Math.abs(amount);
-            }
-           
             informationColor =  item.meta.textColor?
                                 ColorManager.textColor(Number(item.meta.textColor)):
                                 '#ffffff';
-            sxlSimpleABS.informationColor.push(informationColor);
-            sxlSimpleABS.information.push(information);
             sxlSimpleABS.requestShowItemGainItem = item;
             container[item.id] = newNumber.clamp(0, this.maxItems(item));
+
+			let theText = {
+				text: '获得物品: ' + item.name + 'x' + amount,
+				color: item.meta.textColor?Number(item.meta.textColor):0,
+				item: item
+			}
+
+			SSMBS_Window_Notification.text.unshift(theText);
+
             if (container[item.id] === 0) {
                 delete container[item.id];
             }
@@ -3800,8 +3784,8 @@ Game_Party.prototype.gainItem = function(item, amount, includeEquip) {
             $gameMap.requestRefresh();
         }
         if(sxlSimpleItemList.itemShow ){
-             sxlSimpleItemList.smp.createItems()
-             sxlSimpleItemList.smp.createEquips()
+            sxlSimpleItemList.smp.createItems()
+            sxlSimpleItemList.smp.createEquips()
         }
     }else{
         if(item.itypeId){

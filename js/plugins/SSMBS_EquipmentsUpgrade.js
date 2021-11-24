@@ -281,7 +281,6 @@ Scene_Map.prototype.createUpgradeWindow = function(){
 								}
 							}else{
 								$gameParty.loseItem($dataItems[sxlSimpleEquipmentUpgrade.upgradeProtectItem],1)
-								console.log(12372)
 							}	
 						}
 						if(nowLv>=9){ 

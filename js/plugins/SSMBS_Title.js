@@ -17,7 +17,7 @@ SSMBS_Title.splash = 'splash_SSMBS';
 SSMBS_Title.nowchoice = 0;
 SSMBS_Title.lastchoice = 0;
 SSMBS_Title.choiceStartX = 0;
-SSMBS_Title.choiceStartY = 600;
+SSMBS_Title.choiceStartY = 500;
 SSMBS_Title.wordLineHeight = 40;
 SSMBS_Title.wordMaxWidth = 200;
 SSMBS_Title.optionBarMaxOption = 255;
@@ -107,7 +107,7 @@ Scene_Title.prototype.update = function() {
 			let line = 0;
 			let lineHeight = SSMBS_Title.wordLineHeight;
 			let maxWidth = SSMBS_Title.wordMaxWidth;
-			this._titleOptionsWord.bitmap.fontSize = 22;
+			this._titleOptionsWord.bitmap.fontSize = 18;
 			// this._titleOptionsWord.bitmap.textColor = ColorManager.textColor(0);
 			this._titleOptionsWord.bitmap.drawText('NEW GAME', Graphics.width*0.5-maxWidth/2+SSMBS_Title.choiceStartX, SSMBS_Title.choiceStartY+line*lineHeight, maxWidth, lineHeight, 'center');
 			 if( TouchInput.x > Graphics.width*0.5-maxWidth/2+SSMBS_Title.choiceStartX && TouchInput.x < Graphics.width*0.5-maxWidth/2 +SSMBS_Title.choiceStartX + maxWidth &&
@@ -213,7 +213,9 @@ Scene_Title.prototype.terminate = function() {
 Scene_Title.prototype.createBackground = function() {
 	this._splash = new Sprite(
 		ImageManager.loadTitle1(SSMBS_Title.splash)
+		
 	);
+	
 	if(SSMBS_Title.showSplash){
 		this._splash.opacity = 1;
 	}else{
@@ -230,6 +232,7 @@ Scene_Title.prototype.createBackground = function() {
 		ImageManager.loadTitle1('Title_Carrland_SSMBS')
 	);
 	this._titleImg.opacity = 0;
+	
 	// 第二标题背景
 	this._backSprite2 = new Sprite(
 		ImageManager.loadTitle2($dataSystem.title2Name)
@@ -275,13 +278,17 @@ Scene_Title.prototype.drawGameTitle = function() {
 };
 
 Scene_Title.prototype.adjustBackground = function() {
-	this.scaleSprite(this._backSprite1);
-	this.scaleSprite(this._backSprite2);
+	// this.scaleSprite(this._backSprite1);
+	// this.scaleSprite(this._backSprite2);
+	this._splash.scale.x = Graphics.width/this._splash.width;
+	this._splash.scale.y = Graphics.height/this._splash.height;
 	if(SSMBS_Title.movingBackground){
-		this._backSprite1.scale.x += 0.1;
-		this._backSprite1.scale.y += 0.1;
-		this._backSprite1.anchor.x= 0.5;
-		this._backSprite1.anchor.y= 0.5;
+		this._titleImg.scale.x = Graphics.height/this._titleImg.bitmap.height;
+		this._titleImg.scale.y = Graphics.height/this._titleImg.bitmap.height;
+		this._backSprite1.scale.x = Graphics.width/this._backSprite1.bitmap.width + 0.1;
+		this._backSprite1.scale.y = Graphics.height/this._backSprite1.bitmap.height + 0.1;
+		this._backSprite1.anchor.x = 0.5;
+		this._backSprite1.anchor.y = 0.5;
 		this._backSprite1.x = Graphics.width/2;
 		this._backSprite1.y = Graphics.height/2;
 	}

@@ -300,7 +300,6 @@ Scene_Map.prototype.updateSkillWindow = function(){
 						($gameParty.members()[0].skillPoints>=Number($dataSkills[skill].meta.skpCost)? Number($dataSkills[skill].meta.skpCost):1) && 
 						($dataSkills[skill].meta.needlevel? $gameParty.members()[0].level>=Number($dataSkills[skill].meta.needlevel) : true) &&
 						($dataSkills[skill].meta.needSkill? $gameParty.members()[0].hasSkill(Number($dataSkills[skill].meta.needSkill)) : true)
-						 
 						){
 							if(TouchInput.isClicked() && SSMBS_Window_Skills.clickCd == 0){
 								if( $gameParty.members()[0].skillLevelsPoints[skill] < skillMaxLevel ){
@@ -412,12 +411,7 @@ Scene_Map.prototype.updateSkillWindow = function(){
 					}
 					line ++ ;
 				}
-				
-				
 			}
 		}
-		
 	}
-	
-	
 };

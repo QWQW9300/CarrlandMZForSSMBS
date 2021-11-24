@@ -11,7 +11,6 @@
 
 sxlSimpleABS.useItem = function(item,user){
 	//装备的情况
-	
 	if( item.etypeId ){
 		//判断是否可用
 		if(user.battler().canEquip(item)){
@@ -26,10 +25,13 @@ sxlSimpleABS.useItem = function(item,user){
 	}
 	//物品的情况
 	if( item.itypeId){
-		if(item.scId){
+		if(user == $gamePlayer){
 			let cd = item.meta.cooldown?Number(item.meta.cooldown):30;
-			sxlSimpleABS.sceneMap.shorcutItem[item.scId].cd = cd;
-	
+			for( let s = 0 ; s < $gameParty.shortcutGirdItems.length ; s ++ ){
+				if( $gameParty.shortcutGirdItems[s]==item){
+					$gameParty.triggerKeysCooldown[s] = cd;
+				}
+			}
 		}
 		if(item.itypeId && item.occasion != 3){
 			let cd = item.meta.cooldown?Number(item.meta.cooldown):30;
